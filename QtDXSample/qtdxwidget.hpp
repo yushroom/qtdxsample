@@ -43,10 +43,10 @@ public:
 	{
 		timer.stop();
 
-		Release();
+		uninitialize();
 	}
 
-    HRESULT InitD3D()
+    HRESULT initialize()
 	{
 		HRESULT hr = S_OK;
 
@@ -63,14 +63,14 @@ public:
 			D3DCREATE_HARDWARE_VERTEXPROCESSING,
 			&d3dpp, &pDevice ) )
 
-		invalidateDeviceObjects();
+		restoreDeviceObjects();
 
 		return S_OK;
 	}
 
-    void Release()
+    void uninitialize()
 	{
-		SAFE_RELEASE(pVB);
+		invalidateDeviceObjects();
 		SAFE_RELEASE(pDevice);
 		SAFE_RELEASE(pD3D);
 	}
