@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'qtdxwidget.hpp'
 **
-** Created: Wed May 26 01:14:23 2010
+** Created: Wed May 26 01:20:23 2010
 **      by: The Qt Meta Object Compiler version 62 (Qt 4.6.2)
 **
 ** WARNING! All changes made in this file will be lost!

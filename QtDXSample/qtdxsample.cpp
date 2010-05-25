@@ -2,15 +2,15 @@
 #include "qtdxwidget.hpp"
 
 QtDXSample::QtDXSample(QWidget *parent, Qt::WFlags flags) :
-	QMainWindow(parent, flags),
-	widget(new DXWidget())
+QMainWindow(parent, flags),
+widget(new DXWidget())
 {
 	ui.setupUi(this);
 
 	widget->setParent(centralWidget());
-    //setCentralWidget(widget);
+	//setCentralWidget(widget);
 	widget->setFixedSize(300, 300);
-    widget->initialize();
+	widget->initialize();
 }
 
 QtDXSample::~QtDXSample()
