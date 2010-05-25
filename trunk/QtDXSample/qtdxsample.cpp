@@ -10,7 +10,7 @@ QtDXSample::QtDXSample(QWidget *parent, Qt::WFlags flags) :
 	widget->setParent(centralWidget());
     //setCentralWidget(widget);
 	widget->setFixedSize(300, 300);
-    widget->InitD3D();
+    widget->initialize();
 }
 
 QtDXSample::~QtDXSample()
