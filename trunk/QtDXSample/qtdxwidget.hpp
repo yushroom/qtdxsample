@@ -2,7 +2,7 @@
 
 #include "common.h"
 
-#include <QWidget>
+#include <QWidget.h>
 #include <QtCore/QTimer>
 
 // Our custom FVF, which describes our custom vertex structure
@@ -42,8 +42,8 @@ public:
     ~DXWidget()
 	{
 		timer.stop();
-		SAFE_RELEASE(pDevice);
-		SAFE_RELEASE(pD3D);
+
+		Release();
 	}
 
     HRESULT InitD3D()
@@ -51,7 +51,7 @@ public:
 		HRESULT hr = S_OK;
 
 		pD3D = Direct3DCreate9(D3D_SDK_VERSION); //Standard
-		D3DPRESENT_PARAMETERS d3dpp;
+
 		ZeroMemory( &d3dpp, sizeof(d3dpp) );
 		d3dpp.Windowed = TRUE;
 		d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
@@ -63,12 +63,25 @@ public:
 			D3DCREATE_HARDWARE_VERTEXPROCESSING,
 			&d3dpp, &pDevice ) )
 
-		attach();
+		invalidateDeviceObjects();
 
 		return S_OK;
 	}
 
-	HRESULT	attach()
+    void Release()
+	{
+		SAFE_RELEASE(pVB);
+		SAFE_RELEASE(pDevice);
+		SAFE_RELEASE(pD3D);
+	}
+
+	//-----------------------------------------------------------------------------
+	// Name: restoreDeviceObjects()
+	// Desc: You are encouraged to develop applications with a single code path to 
+	//       respond to device loss. This code path is likely to be similar, if not 
+	//       identical, to the code path taken to initialize the device at startup.
+	//-----------------------------------------------------------------------------
+	HRESULT	restoreDeviceObjects()
 	{
 		SAFE_RELEASE(pVB);
 
@@ -110,13 +123,27 @@ public:
 		return S_OK;
 	}
 
+	//-----------------------------------------------------------------------------
+	// Name: invalidateDeviceObjects()
+	// Desc: If the lost device can be restored, the application prepares the 
+	//       device by destroying all video-memory resources and any 
+	//       swap chains. This is typically accomplished by using the SAFE_RELEASE 
+	//       macro.
+	//-----------------------------------------------------------------------------
+	HRESULT invalidateDeviceObjects( void )
+	{
+		SAFE_RELEASE(pVB);
+		return S_OK;
+	}
+
 	HRESULT	render()
 	{
 		if(pDevice == 0) return E_FAIL;
 
+		HRESULT hr = S_OK;
 		pDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
-		if(FAILED(attach())) return E_FAIL;
+		if(FAILED(restoreDeviceObjects())) return E_FAIL;
 
 		if(SUCCEEDED(pDevice->BeginScene()))
 		{
@@ -134,7 +161,74 @@ public:
 
 			pDevice->EndScene();
 		}
-		pDevice->Present( 0, 0, 0, 0 );
+
+		hr = pDevice->Present( 0, 0, 0, 0 );
+
+		// The following code refer to "Direct3D (DirectX 9.0) Code Samples Page6: Lost Device Recovery".
+		// URL: http://www.codesampler.com/dx9src.htm
+
+		//
+		// If Present fails with D3DERR_DEVICELOST the application needs to be 
+		// notified so it cleanup resources and reset the device.
+		//
+
+		if( D3DERR_DEVICENOTRESET == hr )
+		{
+			// Yield some CPU time to other processes
+			Sleep( 100 ); // 100 milliseconds
+
+			//
+			// Test the cooperative level to see if it's okay to render.
+			// The application can determine what to do on encountering a lost 
+			// device by querying the return value of the TestCooperativeLevel 
+			// method.
+			//
+
+			if( FAILED( hr = pDevice->TestCooperativeLevel() ) )
+			{
+				// The device has been lost but cannot be reset at this time. 
+				// Therefore, rendering is not possible and we'll have to return 
+				// and try again at a later time.
+				if( hr == D3DERR_DEVICELOST )
+					return hr;
+
+				// The device has been lost but it can be reset at this time. 
+				if( hr == D3DERR_DEVICENOTRESET )
+				{
+					//
+					// If the device can be restored, the application prepares the 
+					// device by destroying all video-memory resources and any 
+					// swap chains. 
+					//
+
+					invalidateDeviceObjects();
+
+					//
+					// Then, the application calls the Reset method.
+					//
+					// Reset is the only method that has an effect when a device 
+					// is lost, and is the only method by which an application can 
+					// change the device from a lost to an operational state. 
+					// Reset will fail unless the application releases all 
+					// resources that are allocated in D3DPOOL_DEFAULT, including 
+					// those created by the IDirect3DDevice9::CreateRenderTarget 
+					// and IDirect3DDevice9::CreateDepthStencilSurface methods.
+					//
+
+					hr = pDevice->Reset( &d3dpp );
+
+					if( FAILED(hr ) )
+						return hr;
+
+					//
+					// Finally, a lost device must re-create resources (including  
+					// video memory resources) after it has been reset.
+					//
+
+					restoreDeviceObjects();
+				}
+			}
+		}
 
 		return S_OK;
 	}
@@ -161,6 +255,7 @@ private:
 
     void paintEvent(QPaintEvent *paintE)
 	{
+		Q_UNUSED(paintE);
 		render();
 	}
 
@@ -175,6 +270,9 @@ private:
 
 	//! Our rendering device
 	LPDIRECT3DDEVICE9   pDevice;
+
+	//! D3D Device Parameters
+	D3DPRESENT_PARAMETERS d3dpp;
 
 	//! Buffer to hold Vertices
 	LPDIRECT3DVERTEXBUFFER9 pVB;
