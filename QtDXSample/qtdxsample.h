@@ -1,7 +1,6 @@
 #pragma once
 
 #include "common.h"
-#include "logging.h"
 
 #include <QtCore/QPointer>
 #include <QtGui/QMainWindow>
@@ -13,12 +12,12 @@ class QtDXSample : public QMainWindow
 	Q_OBJECT
 
 public:
-	QtDXSample(QWidget *parent = 0, Qt::WFlags flags = 0);
+	QtDXSample( QWidget *parent = 0, Qt::WFlags flags = 0 );
 	~QtDXSample();
 
 private slots:
 	void	repaintCanvas();
-	void	toggleAnimation(bool pressed);
+	void	toggleAnimation( bool pressed );
 
 private:
 	QPointer<DXWidget>	widget;

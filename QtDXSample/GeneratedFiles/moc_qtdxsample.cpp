@@ -1,17 +1,17 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'qtdxsample.h'
 **
-** Created: Mon May 24 00:47:37 2010
-**      by: The Qt Meta Object Compiler version 62 (Qt 4.6.2)
+** Created: Tue Jul 20 02:13:00 2010
+**      by: The Qt Meta Object Compiler version 62 (Qt 4.6.3)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../../qtdxsample.h"
+#include "../qtdxsample.h"
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'qtdxsample.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 62
-#error "This file was generated using the moc from 4.6.2. It"
+#error "This file was generated using the moc from 4.6.3. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
