@@ -13,27 +13,7 @@
   <property name="windowTitle">
    <string>QtDXSample</string>
   </property>
-  <widget class="QWidget" name="centralWidget">
-   <widget class="QPushButton" name="pushButton">
-    <property name="geometry">
-     <rect>
-      <x>308</x>
-      <y>10</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
-    <property name="text">
-     <string>Animation</string>
-    </property>
-    <property name="checkable">
-     <bool>true</bool>
-    </property>
-   </widget>
-  </widget>
+  <widget class="QWidget" name="centralWidget"/>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
@@ -51,8 +31,37 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionPlayPause"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionPlayPause">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <activeoff>:/Resources/media-play-16.png</activeoff>
+     <activeon>:/Resources/media-pause-16.png</activeon>
+     <selectedoff>:/Resources/media-pause-16.png</selectedoff>
+     <selectedon>:/Resources/media-play-16.png</selectedon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>PlayPause</string>
+   </property>
+   <property name="toolTip">
+    <string>Start/Pause Animation</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
@@ -60,8 +69,8 @@
  </resources>
  <connections>
   <connection>
-   <sender>pushButton</sender>
-   <signal>toggled(bool)</signal>
+   <sender>actionPlayPause</sender>
+   <signal>triggered(bool)</signal>
    <receiver>QtDXSampleClass</receiver>
    <slot>toggleAnimation(bool)</slot>
    <hints>

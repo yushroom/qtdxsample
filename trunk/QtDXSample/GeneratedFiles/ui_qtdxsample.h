@@ -1,8 +1,8 @@
 /********************************************************************************
 ** Form generated from reading UI file 'qtdxsample.ui'
 **
-** Created: Mon May 24 00:47:38 2010
-**      by: Qt User Interface Compiler version 4.6.2
+** Created: Tue Jul 20 01:40:03 2010
+**      by: Qt User Interface Compiler version 4.6.3
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -17,7 +17,6 @@
 #include <QtGui/QHeaderView>
 #include <QtGui/QMainWindow>
 #include <QtGui/QMenuBar>
-#include <QtGui/QPushButton>
 #include <QtGui/QStatusBar>
 #include <QtGui/QToolBar>
 #include <QtGui/QWidget>
@@ -27,8 +26,8 @@ QT_BEGIN_NAMESPACE
 class Ui_QtDXSampleClass
 {
 public:
+    QAction *actionPlayPause;
     QWidget *centralWidget;
-    QPushButton *pushButton;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -38,13 +37,19 @@ public:
         if (QtDXSampleClass->objectName().isEmpty())
             QtDXSampleClass->setObjectName(QString::fromUtf8("QtDXSampleClass"));
         QtDXSampleClass->resize(400, 360);
+        actionPlayPause = new QAction(QtDXSampleClass);
+        actionPlayPause->setObjectName(QString::fromUtf8("actionPlayPause"));
+        actionPlayPause->setCheckable(true);
+        actionPlayPause->setChecked(false);
+        actionPlayPause->setEnabled(true);
+        QIcon icon;
+        icon.addFile(QString::fromUtf8(":/Resources/media-play-16.png"), QSize(), QIcon::Active, QIcon::Off);
+        icon.addFile(QString::fromUtf8(":/Resources/media-pause-16.png"), QSize(), QIcon::Active, QIcon::On);
+        icon.addFile(QString::fromUtf8(":/Resources/media-pause-16.png"), QSize(), QIcon::Selected, QIcon::Off);
+        icon.addFile(QString::fromUtf8(":/Resources/media-play-16.png"), QSize(), QIcon::Selected, QIcon::On);
+        actionPlayPause->setIcon(icon);
         centralWidget = new QWidget(QtDXSampleClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
-        pushButton = new QPushButton(centralWidget);
-        pushButton->setObjectName(QString::fromUtf8("pushButton"));
-        pushButton->setGeometry(QRect(308, 10, 75, 23));
-        pushButton->setAutoFillBackground(false);
-        pushButton->setCheckable(true);
         QtDXSampleClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(QtDXSampleClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -57,8 +62,10 @@ public:
         statusBar->setObjectName(QString::fromUtf8("statusBar"));
         QtDXSampleClass->setStatusBar(statusBar);
 
+        mainToolBar->addAction(actionPlayPause);
+
         retranslateUi(QtDXSampleClass);
-        QObject::connect(pushButton, SIGNAL(toggled(bool)), QtDXSampleClass, SLOT(toggleAnimation(bool)));
+        QObject::connect(actionPlayPause, SIGNAL(triggered(bool)), QtDXSampleClass, SLOT(toggleAnimation(bool)));
 
         QMetaObject::connectSlotsByName(QtDXSampleClass);
     } // setupUi
@@ -66,7 +73,11 @@ public:
     void retranslateUi(QMainWindow *QtDXSampleClass)
     {
         QtDXSampleClass->setWindowTitle(QApplication::translate("QtDXSampleClass", "QtDXSample", 0, QApplication::UnicodeUTF8));
-        pushButton->setText(QApplication::translate("QtDXSampleClass", "Animation", 0, QApplication::UnicodeUTF8));
+        actionPlayPause->setText(QApplication::translate("QtDXSampleClass", "PlayPause", 0, QApplication::UnicodeUTF8));
+#ifndef QT_NO_TOOLTIP
+        actionPlayPause->setToolTip(QApplication::translate("QtDXSampleClass", "Start/Pause Animation", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_TOOLTIP
+        actionPlayPause->setShortcut(QApplication::translate("QtDXSampleClass", "Ctrl+P", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };
