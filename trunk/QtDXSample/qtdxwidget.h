@@ -88,6 +88,8 @@ protected:
 
 	IDXGISwapChain*			m_pSwapChain;
 
+	DXGI_SWAP_CHAIN_DESC	m_swapDesc;
+
 	ID3D11RenderTargetView*	m_pRenderTargetView;
 
 	ID3D11Texture2D*		m_pDepthStencil;

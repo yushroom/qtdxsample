@@ -135,6 +135,14 @@ HRESULT DXWidget::initialize()
 		// D3D10_FEATURE_LEVEL_9_1,
 	};
 
+	UINT deviceFlags=0;
+#ifdef _DEBUG
+	deviceFlags |= D3D10_CREATE_DEVICE_DEBUG;
+#endif
+#ifdef USE_D2D
+	deviceFlags |= D3D10_CREATE_DEVICE_BGRA_SUPPORT;
+#endif
+
 	for (UINT driver = 0; driver < ARRAYSIZE(driverAttempts); driver++)
 	{
 		for (UINT level = 0; level < ARRAYSIZE(levelAttempts); level++)
@@ -143,7 +151,7 @@ HRESULT DXWidget::initialize()
 				0,
 				driverAttempts[driver],
 				NULL,
-				D3D10_CREATE_DEVICE_BGRA_SUPPORT,
+				deviceFlags,
 				levelAttempts[level],
 				D3D10_1_SDK_VERSION,
 				&m_pDevice
@@ -155,31 +163,82 @@ HRESULT DXWidget::initialize()
 			}
 		}
 	}
+#endif
 
+#if USE_D3D==11
+	static const D3D_DRIVER_TYPE driverAttempts[] =
+	{
+		D3D_DRIVER_TYPE_HARDWARE,
+		D3D_DRIVER_TYPE_WARP,
+	};
+
+	static const D3D_FEATURE_LEVEL levelAttempts[] =
+	{
+		D3D_FEATURE_LEVEL_11_0,
+		D3D_FEATURE_LEVEL_10_1,
+		D3D_FEATURE_LEVEL_10_0,
+		D3D_FEATURE_LEVEL_9_3,
+		D3D_FEATURE_LEVEL_9_2,
+		// D3D_FEATURE_LEVEL_9_1,
+	};
+
+	UINT deviceFlags=0;
+#ifdef _DEBUG
+	deviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+#ifdef USE_D2D
+	deviceFlags |= D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+#endif
+
+	for (UINT driver = 0; driver < ARRAYSIZE(driverAttempts); driver++)
+	{
+		D3D_FEATURE_LEVEL level;
+
+		hr = D3D11CreateDevice(
+			0,
+			driverAttempts[driver],
+			NULL,
+			deviceFlags,
+			levelAttempts,
+			ARRAYSIZE(levelAttempts),
+			D3D11_SDK_VERSION,
+			&m_pDevice,
+			&level,
+			&m_pDeviceContext
+			);
+
+		if (SUCCEEDED(hr))
+		{
+			break;
+		}
+	}
+#endif
+
+#if USE_D3D>=10
 	IDXGIDevice *pDXGIDevice = NULL;
 	IDXGIAdapter *pAdapter = NULL;
 	IDXGIFactory *pDXGIFactory = NULL;
 
-    if (SUCCEEDED(hr))
-    {
-        hr = m_pDevice->QueryInterface(&pDXGIDevice);
-    }
-    if (SUCCEEDED(hr))
-    {
-        hr = pDXGIDevice->GetAdapter(&pAdapter);
-    }
-    if (SUCCEEDED(hr))
-    {
-        hr = pAdapter->GetParent(IID_PPV_ARGS(&pDXGIFactory));
-    }
-    if (SUCCEEDED(hr))
-    {
-        ::ZeroMemory(&m_swapDesc, sizeof(m_swapDesc));
+	if (SUCCEEDED(hr))
+	{
+		hr = m_pDevice->QueryInterface(&pDXGIDevice);
+	}
+	if (SUCCEEDED(hr))
+	{
+		hr = pDXGIDevice->GetAdapter(&pAdapter);
+	}
+	if (SUCCEEDED(hr))
+	{
+		hr = pAdapter->GetParent(IID_PPV_ARGS(&pDXGIFactory));
+	}
+	if (SUCCEEDED(hr))
+	{
+		::ZeroMemory(&m_swapDesc, sizeof(m_swapDesc));
 
-        m_swapDesc.SampleDesc.Count = 1;		//The Number of Multisamples per Level
-        m_swapDesc.SampleDesc.Quality = 0;		//between 0(lowest Quality) and one lesser than m_pDevice->CheckMultisampleQualityLevels
+		m_swapDesc.SampleDesc.Count = 1;		//The Number of Multisamples per Level
+		m_swapDesc.SampleDesc.Quality = 0;		//between 0(lowest Quality) and one lesser than m_pDevice->CheckMultisampleQualityLevels
 
-		for( UINT i=1; i<=D3D10_MAX_MULTISAMPLE_SAMPLE_COUNT; i++ )
+		for( UINT i=1; i<=4/*D3D10_MAX_MULTISAMPLE_SAMPLE_COUNT*/; i++ )
 		{
 			UINT Quality;
 			if SUCCEEDED( m_pDevice->CheckMultisampleQualityLevels( DXGI_FORMAT_B8G8R8A8_UNORM, i, &Quality ) )
@@ -187,32 +246,29 @@ HRESULT DXWidget::initialize()
 				if ( Quality > 0 )
 				{
 					DXGI_SAMPLE_DESC Desc = { i, Quality - 1 };
-					if ( i <= 4 )
-					{
-						m_swapDesc.SampleDesc = Desc;
-					}
+					m_swapDesc.SampleDesc = Desc;
 				}
 			}
 		} 
 
-        m_swapDesc.BufferDesc.Width = width();
-        m_swapDesc.BufferDesc.Height = height();
-        m_swapDesc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-        m_swapDesc.BufferDesc.RefreshRate.Numerator = 60;
-        m_swapDesc.BufferDesc.RefreshRate.Denominator = 1;
-        m_swapDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        m_swapDesc.BufferCount = 1;
-        m_swapDesc.OutputWindow = winId();
-        m_swapDesc.Windowed = TRUE;
+		m_swapDesc.BufferDesc.Width = width();
+		m_swapDesc.BufferDesc.Height = height();
+		m_swapDesc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+		m_swapDesc.BufferDesc.RefreshRate.Numerator = 60;
+		m_swapDesc.BufferDesc.RefreshRate.Denominator = 1;
+		m_swapDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+		m_swapDesc.BufferCount = 1;
+		m_swapDesc.OutputWindow = winId();
+		m_swapDesc.Windowed = TRUE;
 
-        hr = pDXGIFactory->CreateSwapChain(m_pDevice, &m_swapDesc, &m_pSwapChain);
+		hr = pDXGIFactory->CreateSwapChain(m_pDevice, &m_swapDesc, &m_pSwapChain);
 
 		if( FAILED(hr) )
 		{
-	        m_swapDesc.SampleDesc.Count = 1;
-	        hr = pDXGIFactory->CreateSwapChain(m_pDevice, &m_swapDesc, &m_pSwapChain);
+			m_swapDesc.SampleDesc.Count = 1;
+			hr = pDXGIFactory->CreateSwapChain(m_pDevice, &m_swapDesc, &m_pSwapChain);
 		}
-    }
+	}
 
 	SAFE_RELEASE(pDXGIDevice);
 	SAFE_RELEASE(pAdapter);
@@ -246,7 +302,7 @@ HRESULT DXWidget::initialize()
 
 	if (SUCCEEDED(hr))
 	{
-		restoreDeviceObjects();
+		hr = restoreDeviceObjects();
 	}
 
 	return hr;
@@ -560,7 +616,6 @@ void DXWidget::resizeEvent(QResizeEvent *p_event)
 #endif
 
 #if USE_D3D==10
-
 	ID3D10Resource *pBackBufferResource = NULL;
 	ID3D10RenderTargetView *viewList[1] = {NULL};
 
@@ -635,7 +690,87 @@ void DXWidget::resizeEvent(QResizeEvent *p_event)
 		m_pDevice->RSSetViewports(1, &viewport);
 	}
 	SAFE_RELEASE(pBackBufferResource);
-	
+#endif
+
+#if USE_D3D==11
+	ID3D11Resource *pBackBufferResource = NULL;
+	ID3D11RenderTargetView *viewList[1] = {NULL};
+
+	m_pDeviceContext->ClearState();
+	m_pDeviceContext->OMSetRenderTargets(1, viewList, NULL);
+
+	// Ensure that nobody is holding onto one of the old resources
+	SAFE_RELEASE(m_pRenderTargetView);
+	SAFE_RELEASE(m_pDepthStencilView);
+
+	// Resize render target buffers
+	hr = m_pSwapChain->ResizeBuffers(1, nWidth, nHeight, DXGI_FORMAT_B8G8R8A8_UNORM, 0);
+
+	if (SUCCEEDED(hr))
+	{
+		D3D11_TEXTURE2D_DESC texDesc;
+		texDesc.ArraySize = 1;
+		texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+		texDesc.CPUAccessFlags = 0;
+		texDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		texDesc.Height = nHeight;
+		texDesc.Width = nWidth;
+		texDesc.MipLevels = 1;
+		texDesc.MiscFlags = 0;
+		texDesc.SampleDesc.Count = m_swapDesc.SampleDesc.Count;
+		texDesc.SampleDesc.Quality = m_swapDesc.SampleDesc.Quality;
+		texDesc.Usage = D3D11_USAGE_DEFAULT;
+
+		SAFE_RELEASE(m_pDepthStencil);
+		hr = m_pDevice->CreateTexture2D(&texDesc, NULL, &m_pDepthStencil);
+	}
+
+	if (SUCCEEDED(hr))
+	{
+		// Create the render target view and set it on the device
+		hr = m_pSwapChain->GetBuffer(
+			0,
+			IID_PPV_ARGS(&pBackBufferResource)
+			);
+	}
+	if (SUCCEEDED(hr))
+	{
+		D3D11_RENDER_TARGET_VIEW_DESC renderDesc;
+		renderDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+		renderDesc.ViewDimension = (m_swapDesc.SampleDesc.Count>1) ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
+		renderDesc.Texture2D.MipSlice = 0;
+
+		hr = m_pDevice->CreateRenderTargetView(pBackBufferResource, &renderDesc, &m_pRenderTargetView);
+	}
+	if (SUCCEEDED(hr))
+	{
+		D3D11_DEPTH_STENCIL_VIEW_DESC depthViewDesc;
+		depthViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		depthViewDesc.ViewDimension = (m_swapDesc.SampleDesc.Count>1) ? D3D11_DSV_DIMENSION_TEXTURE2DMS : D3D11_DSV_DIMENSION_TEXTURE2D;
+		depthViewDesc.Flags = 0;
+		depthViewDesc.Texture2D.MipSlice = 0;
+
+		hr = m_pDevice->CreateDepthStencilView(m_pDepthStencil, &depthViewDesc, &m_pDepthStencilView);
+	}
+	if (SUCCEEDED(hr))
+	{
+		viewList[0] = m_pRenderTargetView;
+		m_pDeviceContext->OMSetRenderTargets(1, viewList, m_pDepthStencilView);
+
+		// Set a new viewport based on the new dimensions
+		D3D11_VIEWPORT viewport;
+		viewport.Width = nWidth;
+		viewport.Height = nHeight;
+		viewport.TopLeftX = 0;
+		viewport.TopLeftY = 0;
+		viewport.MinDepth = 0;
+		viewport.MaxDepth = 1;
+		m_pDeviceContext->RSSetViewports(1, &viewport);
+	}
+	SAFE_RELEASE(pBackBufferResource);
+#endif
+
+
 #ifdef USE_D2D
 	IDXGISurface *pBackBuffer = NULL;
 
@@ -673,7 +808,6 @@ void DXWidget::resizeEvent(QResizeEvent *p_event)
 	}
 
 	SAFE_RELEASE(pBackBuffer);
-#endif
 
 #endif
 
