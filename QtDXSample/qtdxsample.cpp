@@ -1,12 +1,18 @@
 #include "qtdxsample.h"
 #include "qtdxwidget.h"
 
+#include <QMessageBox>
+
 #if USE_D3D==9
 #include "MyDX9Widget.h"
 #endif
 
 #if USE_D3D==10
 #include "MyDX10Widget.h"
+#endif
+
+#if USE_D3D==11
+#include "MyDX11Widget.h"
 #endif
 
 
@@ -18,6 +24,9 @@ QtDXSample::QtDXSample(QWidget *parent, Qt::WFlags flags) :
 #if USE_D3D==10
 	,widget(new MyDX10Widget())
 #endif
+#if USE_D3D==11
+	,widget(new MyDX11Widget())
+#endif
 {
 	ui.setupUi(this);
 
@@ -26,7 +35,19 @@ QtDXSample::QtDXSample(QWidget *parent, Qt::WFlags flags) :
 		setCentralWidget(widget);
 		//widget->setParent(centralWidget());
 		//widget->setFixedSize(300, 300);
-		widget->initialize();
+		HRESULT hr;
+		if( FAILED(hr=widget->initialize() ) )
+		{
+			QMessageBox msgBox;
+			msgBox.setWindowTitle(QObject::tr("Failed to initialize DirectX"));
+			QString msg(DXGetErrorDescriptionA(hr));
+			msgBox.setText(msg);
+			msgBox.setIcon(QMessageBox::Critical);
+			msgBox.exec();
+
+			delete widget;
+			widget = 0;
+		}
 	}
 }
 
@@ -37,11 +58,14 @@ QtDXSample::~QtDXSample()
 
 void	QtDXSample::repaintCanvas()
 {
-	widget->render();
+	if(widget)
+		widget->render();
 }
 
 void	QtDXSample::toggleAnimation(bool pressed)
 {
+	if(!widget) return;
+
 	if(pressed)
 		widget->startTimer();
 	else
