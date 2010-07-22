@@ -17,7 +17,7 @@
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="DX9Release|Win32"
+			Name="DX09Release|Win32"
 			OutputDirectory="$(SolutionDir)bin\"
 			IntermediateDirectory="$(SolutionDir)build\$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="1"
@@ -40,7 +40,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\Microsoft DirectX SDK (June 2010)\Include&quot;;&quot;.\..\common&quot;;&quot;.\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;.&quot;"
+				AdditionalIncludeDirectories="C:\Program Files\Microsoft DirectX SDK (June 2010)\Include;.\..\common;.\GeneratedFiles;$(QTDIR)\include;$(QTDIR)\include\qtmain;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;."
 				PreprocessorDefinitions="USE_D3D=9;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -86,7 +86,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="DX9Debug|Win32"
+			Name="DX09Debug|Win32"
 			OutputDirectory="$(SolutionDir)bin\"
 			IntermediateDirectory="$(SolutionDir)build\$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="1"
@@ -110,7 +110,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\Microsoft DirectX SDK (June 2010)\Include&quot;;&quot;.\..\common&quot;;&quot;.\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;.&quot;"
+				AdditionalIncludeDirectories="C:\Program Files\Microsoft DirectX SDK (June 2010)\Include;.\..\common;.\GeneratedFiles;$(QTDIR)\include;$(QTDIR)\include\qtmain;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;."
 				PreprocessorDefinitions="USE_D3D=9;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_CORE_LIB;QT_GUI_LIB"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
@@ -179,7 +179,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\Microsoft DirectX SDK (June 2010)\Include&quot;;&quot;.\..\common&quot;;&quot;.\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;.&quot;"
+				AdditionalIncludeDirectories="C:\Program Files\Microsoft DirectX SDK (June 2010)\Include;.\..\common;.\GeneratedFiles;$(QTDIR)\include;$(QTDIR)\include\qtmain;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;."
 				PreprocessorDefinitions="USE_D3D=10;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -249,7 +249,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\Microsoft DirectX SDK (June 2010)\Include&quot;;&quot;.\..\common&quot;;&quot;.\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;.&quot;"
+				AdditionalIncludeDirectories="C:\Program Files\Microsoft DirectX SDK (June 2010)\Include;.\..\common;.\GeneratedFiles;$(QTDIR)\include;$(QTDIR)\include\qtmain;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;."
 				PreprocessorDefinitions="USE_D3D=10;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_CORE_LIB;QT_GUI_LIB"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
@@ -318,7 +318,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\Microsoft DirectX SDK (June 2010)\Include&quot;;&quot;.\..\common&quot;;&quot;.\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;.&quot;"
+				AdditionalIncludeDirectories="C:\Program Files\Microsoft DirectX SDK (June 2010)\Include;.\..\common;.\GeneratedFiles;$(QTDIR)\include;$(QTDIR)\include\qtmain;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;."
 				PreprocessorDefinitions="USE_D3D=11;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -388,7 +388,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\Microsoft DirectX SDK (June 2010)\Include&quot;;&quot;.\..\common&quot;;&quot;.\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;.&quot;"
+				AdditionalIncludeDirectories="C:\Program Files\Microsoft DirectX SDK (June 2010)\Include;.\..\common;.\GeneratedFiles;$(QTDIR)\include;$(QTDIR)\include\qtmain;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;."
 				PreprocessorDefinitions="USE_D3D=11;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_CORE_LIB;QT_GUI_LIB"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
@@ -476,7 +476,7 @@
 				RelativePath=".\mydx9widget.h"
 				>
 				<FileConfiguration
-					Name="DX9Release|Win32"
+					Name="DX09Release|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -487,7 +487,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="DX9Debug|Win32"
+					Name="DX09Debug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -546,7 +546,7 @@
 				RelativePath=".\qtdxsample.h"
 				>
 				<FileConfiguration
-					Name="DX9Release|Win32"
+					Name="DX09Release|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -557,7 +557,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="DX9Debug|Win32"
+					Name="DX09Debug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -616,7 +616,7 @@
 				RelativePath=".\qtdxwidget.h"
 				>
 				<FileConfiguration
-					Name="DX9Release|Win32"
+					Name="DX09Release|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -627,7 +627,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="DX9Debug|Win32"
+					Name="DX09Debug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -692,7 +692,7 @@
 				RelativePath=".\qtdxsample.ui"
 				>
 				<FileConfiguration
-					Name="DX9Release|Win32"
+					Name="DX09Release|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -703,7 +703,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="DX9Debug|Win32"
+					Name="DX09Debug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -769,7 +769,7 @@
 				RelativePath=".\qtdxsample.qrc"
 				>
 				<FileConfiguration
-					Name="DX9Release|Win32"
+					Name="DX09Release|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -780,7 +780,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="DX9Debug|Win32"
+					Name="DX09Debug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -845,61 +845,19 @@
 			<File
 				RelativePath=".\GeneratedFiles\moc_qtdxsample.cpp"
 				>
-				<FileConfiguration
-					Name="DX9Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DX9Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DX10Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DX10Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DX11Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DX11Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\GeneratedFiles\moc_qtdxwidget.cpp"
 				>
 				<FileConfiguration
-					Name="DX9Release|Win32"
+					Name="DX09Release|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="DX9Debug|Win32"
+					Name="DX09Debug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -938,7 +896,7 @@
 				RelativePath=".\GeneratedFiles\qrc_qtdxsample.cpp"
 				>
 				<FileConfiguration
-					Name="DX9Release|Win32"
+					Name="DX09Release|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -946,7 +904,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="DX9Debug|Win32"
+					Name="DX09Debug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"

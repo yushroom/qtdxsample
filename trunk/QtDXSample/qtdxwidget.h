@@ -78,6 +78,8 @@ protected:
 	ID3D10Texture2D*		m_pDepthStencil;
 
 	ID3D10DepthStencilView*	m_pDepthStencilView;
+
+	D3D10_FEATURE_LEVEL1	m_FeatureLevel;
 #endif
 
 #if USE_D3D==11
@@ -95,6 +97,8 @@ protected:
 	ID3D11Texture2D*		m_pDepthStencil;
 
 	ID3D11DepthStencilView*	m_pDepthStencilView;
+
+	D3D_FEATURE_LEVEL       m_FeatureLevel;
 #endif
 
 #ifdef USE_D2D

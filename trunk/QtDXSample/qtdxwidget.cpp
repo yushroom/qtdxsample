@@ -18,8 +18,13 @@ DXWidget::DXWidget( QWidget *parent, Qt::WFlags flags )
 	m_pDepthStencilView = 0;
 #endif
 
+#if USE_D3D==10
+	m_FeatureLevel = D3D10_FEATURE_LEVEL_9_1;
+#endif
+
 #if USE_D3D==11
 	m_pDeviceContext = 0;
+	m_FeatureLevel = D3D_FEATURE_LEVEL_9_1;
 #endif
 
 #ifdef USE_D2D
@@ -128,11 +133,11 @@ HRESULT DXWidget::initialize()
 
 	static const D3D10_FEATURE_LEVEL1 levelAttempts[] =
 	{
-		D3D10_FEATURE_LEVEL_10_1,
-		D3D10_FEATURE_LEVEL_10_0,
-		D3D10_FEATURE_LEVEL_9_3,
-		D3D10_FEATURE_LEVEL_9_2,
-		// D3D10_FEATURE_LEVEL_9_1,
+		D3D10_FEATURE_LEVEL_10_1,  // Direct3D 10.1 SM 4
+		D3D10_FEATURE_LEVEL_10_0,  // Direct3D 10.0 SM 4
+		D3D10_FEATURE_LEVEL_9_3,   // Direct3D 9.3  SM 3
+		D3D10_FEATURE_LEVEL_9_2,   // Direct3D 9.2  SM 2
+		D3D10_FEATURE_LEVEL_9_1,   // Direct3D 9.1  SM 2
 	};
 
 	UINT deviceFlags=0;
@@ -159,6 +164,7 @@ HRESULT DXWidget::initialize()
 
 			if (SUCCEEDED(hr))
 			{
+				m_FeatureLevel = levelAttempts[level];
 				break;
 			}
 		}
@@ -168,18 +174,18 @@ HRESULT DXWidget::initialize()
 #if USE_D3D==11
 	static const D3D_DRIVER_TYPE driverAttempts[] =
 	{
-		D3D_DRIVER_TYPE_HARDWARE,
+		D3D_DRIVER_TYPE_UNKNOWN,
 		D3D_DRIVER_TYPE_WARP,
 	};
 
 	static const D3D_FEATURE_LEVEL levelAttempts[] =
 	{
-		D3D_FEATURE_LEVEL_11_0,
-		D3D_FEATURE_LEVEL_10_1,
-		D3D_FEATURE_LEVEL_10_0,
-		D3D_FEATURE_LEVEL_9_3,
-		D3D_FEATURE_LEVEL_9_2,
-		// D3D_FEATURE_LEVEL_9_1,
+		D3D_FEATURE_LEVEL_11_0,  // Direct3D 11.0 SM 5
+		D3D_FEATURE_LEVEL_10_1,  // Direct3D 10.1 SM 4
+		D3D_FEATURE_LEVEL_10_0,  // Direct3D 10.0 SM 4
+		D3D_FEATURE_LEVEL_9_3,   // Direct3D 9.3  SM 3
+		D3D_FEATURE_LEVEL_9_2,   // Direct3D 9.2  SM 2
+		D3D_FEATURE_LEVEL_9_1,   // Direct3D 9.1  SM 2
 	};
 
 	UINT deviceFlags=0;
@@ -192,10 +198,8 @@ HRESULT DXWidget::initialize()
 
 	for (UINT driver = 0; driver < ARRAYSIZE(driverAttempts); driver++)
 	{
-		D3D_FEATURE_LEVEL level;
-
 		hr = D3D11CreateDevice(
-			0,
+			NULL,
 			driverAttempts[driver],
 			NULL,
 			deviceFlags,
@@ -203,7 +207,7 @@ HRESULT DXWidget::initialize()
 			ARRAYSIZE(levelAttempts),
 			D3D11_SDK_VERSION,
 			&m_pDevice,
-			&level,
+			&m_FeatureLevel,
 			&m_pDeviceContext
 			);
 
