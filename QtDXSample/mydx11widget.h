@@ -125,7 +125,7 @@ public:
 		// Compile the VS from the file
 		ID3DBlob* pVSBuf = NULL;
 
-		DWORD dwShaderFlags = 0;
+		DWORD dwShaderFlags = D3D10_SHADER_ENABLE_BACKWARDS_COMPATIBILITY;
 		#if defined( DEBUG ) || defined( _DEBUG )
 		// Set the D3D11_SHADER_DEBUG flag to embed debug information in the shaders.
 		// Setting this flag improves the shader debugging experience, but still allows 
@@ -134,14 +134,39 @@ public:
 		dwShaderFlags |= D3D10_SHADER_DEBUG;
 		#endif
 
-		V_RETURN( D3DX11CompileFromFile( L"HLSLwithoutFX10.vsh", NULL, NULL, "Ripple", "vs_4_0", dwShaderFlags, NULL, NULL, &pVSBuf, NULL,
+		char* vsFunc = 0;
+		char* psFunc = 0;
+
+		switch( m_FeatureLevel )
+		{
+			case D3D_FEATURE_LEVEL_10_1:
+				vsFunc = "vs_4_1";
+				psFunc = "ps_4_1";
+				break;
+			case D3D_FEATURE_LEVEL_10_0:
+				vsFunc = "vs_4_0";
+				psFunc = "ps_4_0";
+				break;
+			case D3D_FEATURE_LEVEL_9_3:
+				vsFunc = "vs_4_0_level_9_3";
+				psFunc = "ps_4_0_level_9_3";
+				break;
+			default:
+			case D3D_FEATURE_LEVEL_9_2: // Shader model 2 fits feature level 9_1
+			case D3D_FEATURE_LEVEL_9_1:
+				vsFunc = "vs_4_0_level_9_1";
+				psFunc = "ps_4_0_level_9_1";
+				break;
+		}
+
+		V_RETURN( D3DX11CompileFromFile( L"HLSLwithoutFX10.vsh", NULL, NULL, "Ripple", vsFunc, dwShaderFlags, NULL, NULL, &pVSBuf, NULL,
 										 NULL ) );
 		V_RETURN( m_pDevice->CreateVertexShader( ( DWORD* )pVSBuf->GetBufferPointer(),
 												  pVSBuf->GetBufferSize(), NULL, &m_pVS11 ) );
 
 		// Compile the PS from the file
 		ID3DBlob* pPSBuf = NULL;
-		V_RETURN( D3DX11CompileFromFile( L"HLSLwithoutFX.psh", NULL, NULL, "main", "ps_4_0", dwShaderFlags, NULL, NULL, &pPSBuf, NULL,
+		V_RETURN( D3DX11CompileFromFile( L"HLSLwithoutFX.psh", NULL, NULL, "main", psFunc, dwShaderFlags, NULL, NULL, &pPSBuf, NULL,
 										 NULL ) );
 		V_RETURN( m_pDevice->CreatePixelShader( ( DWORD* )pPSBuf->GetBufferPointer(),
 												 pPSBuf->GetBufferSize(), NULL, &m_pPS11 ) );

@@ -30,8 +30,13 @@
 
 #include <windows.h>
 
+#include <xnamath.h>
+
 #include <DxErr.h>
 #pragma comment(lib,"DxErr.lib")
+
+#include <d3dcompiler.h>
+#pragma comment(lib,"d3dcompiler.lib")
 
 #ifdef USE_D2D
 	#include <d2d1.h>
@@ -49,7 +54,6 @@
 	#include <d3d11.h>
 	#include <d3dx11.h>
 	#include <d3dx10math.h>
-	#include <d3dcompiler.h>
 
 	#pragma comment(lib,"d3d11.lib")
 	#ifdef _DEBUG
@@ -59,7 +63,6 @@
 		#pragma comment(lib,"d3dx10.lib")
 		#pragma comment(lib,"d3dx11.lib")
 	#endif
-	#pragma comment(lib,"d3dcompiler.lib")
 #endif
 
 #if USE_D3D==10
