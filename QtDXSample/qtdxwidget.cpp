@@ -31,6 +31,7 @@ DXWidget::DXWidget( QWidget *parent, Qt::WFlags flags )
 	m_pD2DFactory = 0;
 	m_pWICFactory = 0;
 	m_pDWriteFactory = 0;
+	m_pHwndRenderTarget = 0;
 #endif
 
 	setAttribute(Qt::WA_PaintOnScreen);
@@ -302,6 +303,19 @@ HRESULT DXWidget::initialize()
 			reinterpret_cast<IUnknown **>(&m_pDWriteFactory)
 			);
 	}
+
+	if (SUCCEEDED(hr))
+	{
+		D2D1_SIZE_U size = D2D1::SizeU( width(), height() );
+
+		// Create a Direct2D render target.
+		hr = m_pD2DFactory->CreateHwndRenderTarget(
+			D2D1::RenderTargetProperties(),
+			D2D1::HwndRenderTargetProperties(winId(), size),
+			&m_pHwndRenderTarget
+			);
+	}
+
 #endif
 
 	if (SUCCEEDED(hr))
@@ -321,6 +335,7 @@ void DXWidget::uninitialize()
 	invalidateDeviceObjects();
 
 #ifdef USE_D2D
+	SAFE_RELEASE(m_pHwndRenderTarget);
 	SAFE_RELEASE(m_pD2DFactory);
 	SAFE_RELEASE(m_pWICFactory);
 	SAFE_RELEASE(m_pDWriteFactory);
@@ -358,6 +373,9 @@ HRESULT	DXWidget::restoreDeviceObjects()
 #if USE_D3D>=11
 	if( !m_pDeviceContext ) return E_FAIL;
 #endif
+#if USE_D2D
+	if( !m_pD2DFactory || !m_pDWriteFactory ) return E_FAIL;
+#endif
 	return S_OK;
 }
 
@@ -375,6 +393,9 @@ HRESULT DXWidget::invalidateDeviceObjects()
 #endif
 #if USE_D3D>=11
 	if( !m_pDeviceContext ) return E_FAIL;
+#endif
+#if USE_D2D
+	if( !m_pD2DFactory || !m_pDWriteFactory ) return E_FAIL;
 #endif
 	return S_OK;
 }
@@ -394,9 +415,15 @@ HRESULT	DXWidget::render()
 #if USE_D3D>=11
 	if( !m_pDeviceContext ) return E_FAIL;
 #endif
+#if USE_D2D
+	if( !m_pHwndRenderTarget ) return E_FAIL;
+	if( (m_pHwndRenderTarget->CheckWindowState() & D2D1_WINDOW_STATE_OCCLUDED)) return E_FAIL;
+#endif
 
 	return S_OK;
 }
+
+#ifdef USE_D3D
 
 //-----------------------------------------------------------------------------
 // Name: clearScene()
@@ -566,6 +593,45 @@ HRESULT	DXWidget::present()
 
 	return hr;
 }
+
+#endif
+
+#ifdef USE_D2D
+
+//-----------------------------------------------------------------------------
+// Name: clearRenderTarget()
+// Desc: Clear the render target
+//-----------------------------------------------------------------------------
+void	DXWidget::clearRenderTarget( D2D1::ColorF ClearColor )
+{
+	m_pHwndRenderTarget->Clear( ClearColor );
+}
+
+//-----------------------------------------------------------------------------
+// Name: beginDraw()
+// Desc: Begin draw
+//-----------------------------------------------------------------------------
+void	DXWidget::beginDraw()
+{
+	m_pHwndRenderTarget->BeginDraw();
+}
+
+//-----------------------------------------------------------------------------
+// Name: endDraw()
+// Desc: End draw
+//-----------------------------------------------------------------------------
+HRESULT	DXWidget::endDraw()
+{
+	HRESULT hr = m_pHwndRenderTarget->EndDraw();
+	if (hr == D2DERR_RECREATE_TARGET)
+	{
+		uninitialize();
+		hr = initialize();
+	}
+	return hr;
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // Name: startTimer()
@@ -776,43 +842,17 @@ void DXWidget::resizeEvent(QResizeEvent *p_event)
 
 
 #ifdef USE_D2D
-	IDXGISurface *pBackBuffer = NULL;
-
-	if (SUCCEEDED(hr))
+	if( m_pHwndRenderTarget )
 	{
-		// Get a surface in the swap chain
-		hr = m_pSwapChain->GetBuffer(
-			0,
-			IID_PPV_ARGS(&pBackBuffer)
-			);
+		// Note: This method can fail, but it's okay to ignore the
+		// error here -- it will be repeated on the next call to
+		// EndDraw.
+		D2D1_SIZE_U size;
+		size.width = newSize.width();
+		size.height = newSize.height();
+
+		m_pHwndRenderTarget->Resize(size);
 	}
-
-	if (SUCCEEDED(hr))
-	{
-		// Create the DXGI Surface Render Target.
-		FLOAT dpiX;
-		FLOAT dpiY;
-		m_pD2DFactory->GetDesktopDpi(&dpiX, &dpiY);
-
-		D2D1_RENDER_TARGET_PROPERTIES props =
-			D2D1::RenderTargetProperties(
-				D2D1_RENDER_TARGET_TYPE_DEFAULT,
-				D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED),
-				dpiX,
-				dpiY
-				);
-
-		// Create a D2D render target which can draw into the surface in the swap chain
-		SAFE_RELEASE(m_pBackBufferRT);
-		hr = m_pD2DFactory->CreateDxgiSurfaceRenderTarget(
-			pBackBuffer,
-			&props,
-			&m_pBackBufferRT
-			);
-	}
-
-	SAFE_RELEASE(pBackBuffer);
-
 #endif
 
 #if USE_D3D==9

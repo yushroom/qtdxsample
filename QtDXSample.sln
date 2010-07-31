@@ -5,6 +5,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QtDXSample", "QtDXSample\Qt
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		D2DDebug|Win32 = D2DDebug|Win32
+		D2DRelease|Win32 = D2DRelease|Win32
 		DX09Debug|Win32 = DX09Debug|Win32
 		DX09Release|Win32 = DX09Release|Win32
 		DX10Debug|Win32 = DX10Debug|Win32
@@ -13,6 +15,10 @@ Global
 		DX11Release|Win32 = DX11Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{01ABE5C9-131D-4EA4-ADFD-4E8DCB3CE5BF}.D2DDebug|Win32.ActiveCfg = D2DDebug|Win32
+		{01ABE5C9-131D-4EA4-ADFD-4E8DCB3CE5BF}.D2DDebug|Win32.Build.0 = D2DDebug|Win32
+		{01ABE5C9-131D-4EA4-ADFD-4E8DCB3CE5BF}.D2DRelease|Win32.ActiveCfg = D2DRelease|Win32
+		{01ABE5C9-131D-4EA4-ADFD-4E8DCB3CE5BF}.D2DRelease|Win32.Build.0 = D2DRelease|Win32
 		{01ABE5C9-131D-4EA4-ADFD-4E8DCB3CE5BF}.DX09Debug|Win32.ActiveCfg = DX09Debug|Win32
 		{01ABE5C9-131D-4EA4-ADFD-4E8DCB3CE5BF}.DX09Debug|Win32.Build.0 = DX09Debug|Win32
 		{01ABE5C9-131D-4EA4-ADFD-4E8DCB3CE5BF}.DX09Release|Win32.ActiveCfg = DX09Release|Win32
