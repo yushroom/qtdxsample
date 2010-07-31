@@ -24,14 +24,21 @@ public:
 
 	virtual HRESULT	render();
 
+#ifdef USE_D3D
 	virtual void	clearScene( D3DXCOLOR ClearColor, float Z=1.0f, DWORD Stencil=0 );
 	virtual void	clearRenderTarget( D3DXCOLOR ClearColor );
 	virtual void	clearDepthStencil( float Z=1.0f, DWORD Stencil=0 );
 
 	virtual HRESULT	beginScene();
 	virtual HRESULT	endScene();
-
 	virtual HRESULT	present();
+#endif
+
+#ifdef USE_D2D
+	virtual void	clearRenderTarget( D2D1::ColorF ClearColor );
+	virtual void	beginDraw();
+	virtual HRESULT	endDraw();
+#endif
 
 	virtual void	startTimer();
 	virtual void	stopTimer();
@@ -107,6 +114,8 @@ protected:
 	IWICImagingFactory*		m_pWICFactory;
 
 	IDWriteFactory*			m_pDWriteFactory;
+
+	ID2D1HwndRenderTarget*	m_pHwndRenderTarget;
 #endif
 
 };

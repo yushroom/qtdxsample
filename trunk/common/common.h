@@ -48,6 +48,7 @@
 	#pragma comment(lib,"dwrite.lib")
 	#pragma comment(lib,"windowscodecs.lib")
 	#pragma comment(lib,"dxgi.lib")
+
 #endif
 
 #if USE_D3D==11

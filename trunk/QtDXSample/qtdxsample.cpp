@@ -15,6 +15,10 @@
 #include "MyDX11Widget.h"
 #endif
 
+#if USE_D2D==1
+#include "MyD2DWidget.h"
+#endif
+
 
 QtDXSample::QtDXSample(QWidget *parent, Qt::WFlags flags) :
 	QMainWindow(parent, flags)
@@ -26,6 +30,9 @@ QtDXSample::QtDXSample(QWidget *parent, Qt::WFlags flags) :
 #endif
 #if USE_D3D==11
 	,widget(new MyDX11Widget())
+#endif
+#if USE_D2D==1
+	,widget(new MyD2DWidget())
 #endif
 {
 	ui.setupUi(this);
