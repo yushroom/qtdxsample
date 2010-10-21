@@ -1,0 +1,29 @@
+<UI version="4.0" >
+ <class>QtD2DSampleClass</class>
+ <widget class="QMainWindow" name="QtD2DSampleClass" >
+  <property name="objectName" >
+   <string notr="true">QtD2DSampleClass</string>
+  </property>
+  <property name="geometry" >
+   <rect>
+	<x>0</x>
+	<y>0</y>
+	<width>600</width>
+	<height>400</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>QtD2DSample</string>
+  </property>
+  <widget class="QMenuBar" name="menuBar" />
+  <widget class="QToolBar" name="mainToolBar" />
+  <widget class="QWidget" name="centralWidget" />
+  <widget class="QStatusBar" name="statusBar" />
+ </widget>
+ <layoutDefault spacing="6" margin="11" />
+ <pixmapfunction></pixmapfunction>
+ <resources>
+   <include location="qtd2dsample.qrc"/>
+ </resources>
+ <connections/>
+</UI>
