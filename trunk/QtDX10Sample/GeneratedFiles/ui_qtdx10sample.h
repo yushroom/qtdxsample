@@ -1,8 +1,8 @@
 /********************************************************************************
 ** Form generated from reading UI file 'qtdx10sample.ui'
 **
-** Created: Thu Oct 21 20:22:37 2010
-**      by: Qt User Interface Compiler version 4.7.0
+** Created: Wed Dec 15 07:16:10 2010
+**      by: Qt User Interface Compiler version 4.7.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
