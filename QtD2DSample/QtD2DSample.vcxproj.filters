@@ -39,6 +39,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GeneratedFiles\ui_qtd2dsample.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="myd2dwidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
     <CustomBuild Include="qtd2dsample.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -48,13 +56,5 @@
     <CustomBuild Include="qtd2dsample.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_qtd2dsample.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="myd2dwidget.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

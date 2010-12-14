@@ -39,6 +39,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GeneratedFiles\ui_qtdx09sample.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mydx9widget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
     <CustomBuild Include="qtdx09sample.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -48,13 +56,5 @@
     <CustomBuild Include="qtdx09sample.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_qtdx09sample.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mydx9widget.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

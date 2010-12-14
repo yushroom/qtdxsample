@@ -16,8 +16,8 @@ int main(int argc, char *argv[])
 	if( FAILED(hr=widget.initialize() ) )
 	{
 		QMessageBox msgBox;
-		msgBox.setWindowTitle(QObject::tr("Failed to initialize DirectX"));
-		QString msg(DXGetErrorDescriptionA(hr));
+		msgBox.setWindowTitle(QObject::tr("Failed to initialize Direct2D"));
+		QString msg("Failed to initialize Direct2D");
 		msgBox.setText(msg);
 		msgBox.setIcon(QMessageBox::Critical);
 		msgBox.exec();

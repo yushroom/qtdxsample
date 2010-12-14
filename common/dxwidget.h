@@ -12,7 +12,6 @@ public:
 	{
 		setAttribute(Qt::WA_PaintOnScreen);
 		setAttribute(Qt::WA_NoSystemBackground);
-		setAttribute(Qt::WA_OpaquePaintEvent);
 
 		m_standBy = false;
 		m_lastRendered = 0;
