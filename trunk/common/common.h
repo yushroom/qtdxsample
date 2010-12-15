@@ -14,9 +14,11 @@
 #include <valarray>
 #include <stack>
 #include <list>
+#include <set>
 #include <map>
 
 #ifdef HAS_TR1
+#include <unordered_set>
 #include <unordered_map>
 #endif
 
@@ -34,14 +36,6 @@
 
 #include <windows.h>
 
-#ifdef USE_D3D
-#include <DxErr.h>
-#pragma comment(lib,"DxErr.lib")
-
-#include <d3dcompiler.h>
-#pragma comment(lib,"d3dcompiler.lib")
-#endif
-
 #ifdef USE_D2D
 	#include <d2d1.h>
 	#include <d2d1helper.h>
@@ -53,6 +47,14 @@
 	#pragma comment(lib,"windowscodecs.lib")
 	#pragma comment(lib,"dxgi.lib")
 
+#endif
+
+#ifdef USE_D3D
+#include <DxErr.h>
+#pragma comment(lib,"DxErr.lib")
+
+#include <d3dcompiler.h>
+#pragma comment(lib,"d3dcompiler.lib")
 #endif
 
 #if USE_D3D==11
