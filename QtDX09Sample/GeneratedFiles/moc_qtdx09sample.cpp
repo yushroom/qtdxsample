@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'qtdx09sample.h'
 **
-** Created: Wed Dec 15 07:16:11 2010
+** Created: Thu Dec 16 00:33:43 2010
 **      by: The Qt Meta Object Compiler version 62 (Qt 4.7.1)
 **
 ** WARNING! All changes made in this file will be lost!

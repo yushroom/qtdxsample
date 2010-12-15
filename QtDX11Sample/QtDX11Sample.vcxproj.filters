@@ -39,11 +39,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_qtdx11sample.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="mydx11widget.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_qtdx11sample.h">
+      <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -52,6 +52,12 @@
     </CustomBuild>
     <CustomBuild Include="qtdx11sample.ui">
       <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="HLSLwithoutFX.psh">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="HLSLwithoutFX10.vsh">
+      <Filter>Resource Files</Filter>
     </CustomBuild>
     <CustomBuild Include="qtdx11sample.qrc">
       <Filter>Resource Files</Filter>
