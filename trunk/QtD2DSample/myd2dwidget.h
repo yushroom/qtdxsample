@@ -17,6 +17,11 @@ public:
 		m_pHwndRenderTarget = 0;
 	}
 
+	virtual ~MyD2DWidget()
+	{
+		uninitialize();
+	}
+
 	//-----------------------------------------------------------------------------
 	// Name: restoreDeviceObjects()
 	// Desc: You are encouraged to develop applications with a single code path to 

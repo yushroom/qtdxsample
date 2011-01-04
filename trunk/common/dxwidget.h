@@ -16,13 +16,24 @@ public:
 		m_standBy = false;
 		m_lastRendered = 0;
 	}
-	virtual ~DXWidget()
+	virtual ~DXWidget() {}
+
+	virtual void setVisible(bool visible)
 	{
-		uninitialize();
+		if(visible)
+		{
+			QWidget::setVisible(visible);
+			//initialize();
+		}
+		else
+		{
+			//uninitialize();
+			QWidget::setVisible(visible);
+		}
 	}
 
 	virtual HRESULT initialize() = 0;
-	virtual void	uninitialize() {}
+	virtual void	uninitialize() = 0;
 
 	virtual HRESULT	restoreDeviceObjects() = 0;
 	virtual HRESULT invalidateDeviceObjects() = 0;
@@ -40,7 +51,7 @@ public:
 protected:
 	QPaintEngine *paintEngine() const { return 0; } 
 
-	virtual void	paintEvent( QPaintEvent *paintE )
+	virtual void	paintEvent(QPaintEvent *paintE)
 	{
 		Q_UNUSED(paintE);
 		present();
