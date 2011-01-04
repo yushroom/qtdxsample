@@ -8,7 +8,6 @@
 #define _BOOL
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
-#define _USE_MATH_DEFINES
 
 #include <vector>
 #include <valarray>
@@ -97,9 +96,6 @@
 #endif
 
 
-#ifndef V
-#define V(x)           { hr = (x); }
-#endif
 #ifndef V_RETURN
 #define V_RETURN(x)    { hr = (x); if( FAILED(hr) ) { return hr; } }
 #endif
