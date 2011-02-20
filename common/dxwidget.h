@@ -18,7 +18,7 @@ public:
 	}
 	virtual ~DXWidget() {}
 
-	virtual void setVisible(bool visible)
+	virtual void	setVisible(bool visible)
 	{
 		if(visible)
 		{
@@ -32,11 +32,11 @@ public:
 		}
 	}
 
-	virtual HRESULT initialize() = 0;
+	virtual HRESULT	initialize() = 0;
 	virtual void	uninitialize() = 0;
 
 	virtual HRESULT	restoreDeviceObjects() = 0;
-	virtual HRESULT invalidateDeviceObjects() = 0;
+	virtual HRESULT	invalidateDeviceObjects() = 0;
 
 	virtual HRESULT	render( double fTime )
 	{
@@ -62,5 +62,4 @@ protected:
 
 	//! Last updated time
 	double	m_lastRendered;
-
 };

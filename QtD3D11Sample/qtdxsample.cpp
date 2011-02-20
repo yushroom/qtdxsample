@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "QtDXSample.h"
-#include "../common/dxwidget.h"
+#include "../common/d3dwidget.h"
 
 QtDXSample::QtDXSample(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags)
@@ -11,6 +11,10 @@ QtDXSample::QtDXSample(QWidget *parent, Qt::WFlags flags)
 	m_timer.setSingleShot( false ) ; 
 	QObject::connect( &m_timer, SIGNAL( timeout() ), this, SLOT( idle() ) ) ; 
 	m_fTime = 0.0f;
+
+	//ui.paramWidgetContents->setLayout(&m_paramLayout);
+
+	//cameraGroup.setLayout(&m_paramLayout);
 }
 
 QtDXSample::~QtDXSample()
@@ -34,11 +38,14 @@ void QtDXSample::setVisible(bool visible)
 
 void QtDXSample::idle()
 {
-	m_fTime += m_timer.interval()/1000.0f;
+	m_fTime += m_timer.interval()/1000.0;
 	//! DirectX Widget
 	DXWidget*	widget = (DXWidget *)this->centralWidget();
 	if(widget)
-		widget->render( m_fTime );
+	{
+		widget->setTime(m_fTime);
+		widget->update();
+	}
 }
 
 void QtDXSample::toggleAnimation(bool pressed)

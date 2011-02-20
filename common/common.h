@@ -45,7 +45,6 @@
 	#pragma comment(lib,"dwrite.lib")
 	#pragma comment(lib,"windowscodecs.lib")
 	#pragma comment(lib,"dxgi.lib")
-
 #endif
 
 #ifdef USE_D3D

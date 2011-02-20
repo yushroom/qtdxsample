@@ -187,7 +187,7 @@ public:
 	// Name: render()
 	// Desc: Draws the scene
 	//-----------------------------------------------------------------------------
-	virtual HRESULT	render( double fTime )
+	virtual HRESULT	render()
 	{
 		if( !m_pHwndRenderTarget ) return E_FAIL;
 		if( (m_pHwndRenderTarget->CheckWindowState() & D2D1_WINDOW_STATE_OCCLUDED)) return E_FAIL;
@@ -211,7 +211,6 @@ public:
 			);
 
 		endDraw();
-		m_lastRendered = fTime;
 
 		return S_OK;
 	}
@@ -242,7 +241,7 @@ public:
 
 			m_pHwndRenderTarget->Resize(size);
 		}
-		render( m_lastRendered );
+		render();
 	}
 private:
 	ID2D1Factory*			m_pD2DFactory;

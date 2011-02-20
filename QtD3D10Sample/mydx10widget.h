@@ -1,7 +1,7 @@
 #pragma once
 
 #define USE_D3D 10
-#include "../common/dxwidget.h"
+#include "../common/d3dwidget.h"
 
 class MyDX10Widget : public DXWidget
 {
@@ -392,7 +392,7 @@ public:
 	// Name: render()
 	// Desc: Draws the scene
 	//-----------------------------------------------------------------------------
-	HRESULT	render( double fTime )
+	HRESULT	render()
 	{
 		if( !m_pDevice ) return E_FAIL;
 		if( !m_pRenderTargetView || !m_pDepthStencilView ) return E_FAIL;
@@ -407,7 +407,7 @@ public:
 
 		D3DXMATRIXA16 mWorldViewProj = m_mWorld * m_mView * m_mProj;
 		// DX10 spec only guarantees Sincos function from -100 * Pi to 100 * Pi
-		float fBoundedTime = (float) fTime - (floor( (float) fTime / (2.0f * D3DX_PI)) * 2.0f * D3DX_PI);
+		float fBoundedTime = (float) m_fTime - (floor( (float) m_fTime / (2.0f * D3DX_PI)) * 2.0f * D3DX_PI);
 
 		DWORD VERTS_PER_EDGE = 64;
 		DWORD dwNumIndices = 6 * ( VERTS_PER_EDGE - 1 ) * ( VERTS_PER_EDGE - 1 );
@@ -415,7 +415,7 @@ public:
 		VS_CONSTANT_BUFFER* pConstData;
 		m_pConstantBuffer10->Map( D3D10_MAP_WRITE_DISCARD, NULL, ( void** )&pConstData );
 		pConstData->mWorldViewProj = mWorldViewProj;
-		pConstData->fTime = fTime;
+		pConstData->fTime = m_fTime;
 		m_pConstantBuffer10->Unmap();
 
 		// Set IA parameters
@@ -440,7 +440,6 @@ public:
 		m_pDevice->DrawIndexed( dwNumIndices, 0, 0 );
 
 		hr = present();
-		m_lastRendered = fTime;
 
 		return S_OK;
 	}
@@ -651,7 +650,7 @@ public:
 		D3DXMatrixTranslation( &mTrans, -m_vModelCenter.x, -m_vModelCenter.y, -m_vModelCenter.z );
 		m_mWorld = mTrans * m_mModelRot;
 
-		render( m_lastRendered );
+		render();
 	}
 
 private:

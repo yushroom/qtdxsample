@@ -1,7 +1,7 @@
 #pragma once
 
 #define USE_D3D 11
-#include "../common/dxwidget.h"
+#include "../common/d3dwidget.h"
 
 class MyDX11Widget : public DXWidget
 {
@@ -397,7 +397,7 @@ public:
 	// Name: render()
 	// Desc: Draws the scene
 	//-----------------------------------------------------------------------------
-	HRESULT	render( double fTime )
+	HRESULT	render()
 	{
 		if( !m_pDevice || !m_pDeviceContext ) return E_FAIL;
 		if( !m_pRenderTargetView || !m_pDepthStencilView ) return E_FAIL;
@@ -412,7 +412,7 @@ public:
 
 		D3DXMATRIXA16 mWorldViewProj = m_mWorld * m_mView * m_mProj;
 		// DX11 spec only guarantees Sincos function from -110 * Pi to 110 * Pi
-		float fBoundedTime = (float) fTime - (floor( (float) fTime / (2.0f * D3DX_PI)) * 2.0f * D3DX_PI);
+		float fBoundedTime = (float) m_fTime - (floor( (float) m_fTime / (2.0f * D3DX_PI)) * 2.0f * D3DX_PI);
 
 		DWORD VERTS_PER_EDGE = 64;
 		DWORD dwNumIndices = 6 * ( VERTS_PER_EDGE - 1 ) * ( VERTS_PER_EDGE - 1 );
@@ -421,7 +421,7 @@ public:
 		m_pDeviceContext->Map( m_pConstantBuffer11, 0, D3D11_MAP_WRITE_DISCARD, NULL, &MappedSubResourceRead );
 		VS_CONSTANT_BUFFER* pConstData = (VS_CONSTANT_BUFFER*)MappedSubResourceRead.pData;
 		pConstData->mWorldViewProj = mWorldViewProj;
-		pConstData->fTime = fTime;
+		pConstData->fTime = m_fTime;
 		m_pDeviceContext->Unmap( m_pConstantBuffer11, 0 );
 
 		// Set IA parameters
@@ -446,7 +446,6 @@ public:
 		m_pDeviceContext->DrawIndexed( dwNumIndices, 0, 0 );
 
 		hr = present();
-		m_lastRendered = fTime;
 
 		return S_OK;
 	}
@@ -658,7 +657,7 @@ public:
 		D3DXMatrixTranslation( &mTrans, -m_vModelCenter.x, -m_vModelCenter.y, -m_vModelCenter.z );
 		m_mWorld = mTrans * m_mModelRot;
 
-		render( m_lastRendered );
+		render();
 	}
 
 private:
