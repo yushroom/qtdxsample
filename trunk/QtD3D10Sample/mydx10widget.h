@@ -171,6 +171,8 @@ public:
 			hr = restoreDeviceObjects();
 		}
 
+		initCamera();
+
 		return hr;
 	}
 
@@ -405,7 +407,7 @@ public:
 
 		clearScene( D3DXCOLOR( 0.0f, 0.25f, 0.25f, 0.55f ), 1.0f, 0 );
 
-		D3DXMATRIXA16 mWorldViewProj = m_mWorld * m_mView * m_mProj;
+		D3DXMATRIXA16 mWorldViewProj = m_viewMatrix * m_projMatrix;
 		// DX10 spec only guarantees Sincos function from -100 * Pi to 100 * Pi
 		float fBoundedTime = (float) m_fTime - (floor( (float) m_fTime / (2.0f * D3DX_PI)) * 2.0f * D3DX_PI);
 
@@ -593,62 +595,7 @@ public:
 		
 		// Camera --------------------------------------------------------
 
-		float fAspect = width() / (float)height();
-		float fFOV = D3DX_PI / 4;
-		float fNearPlane = 0.1f;
-		float fFarPlane = 5000.0f;
-		D3DXMatrixPerspectiveFovLH( &m_mProj, fFOV, fAspect, fNearPlane, fFarPlane );
-
-		D3DXQUATERNION m_qNow;              // Composite quaternion for current drag
-		D3DXMATRIXA16 m_mRotation;         // Matrix for arc ball's orientation
-
-		m_qNow = D3DXQUATERNION( -0.275f, 0.3f, 0.0f, 0.7f );
-		D3DXMatrixRotationQuaternion( &m_mRotation, &m_qNow );
-
-		D3DXMATRIX mCameraRot;
-		D3DXMatrixInverse( &mCameraRot, NULL, &m_mRotation );
-
-		// Transform vectors based on camera's rotation matrix
-		D3DXVECTOR3 vWorldUp, vWorldAhead;
-		D3DXVECTOR3 vLocalUp = D3DXVECTOR3( 0, 1, 0 );
-		D3DXVECTOR3 vLocalAhead = D3DXVECTOR3( 0, 0, 1 );
-		D3DXVec3TransformCoord( &vWorldUp, &vLocalUp, &mCameraRot );
-		D3DXVec3TransformCoord( &vWorldAhead, &vLocalAhead, &mCameraRot );
-
-		float m_fRadius;              // Distance from the camera to model 
-		m_fRadius = 5.0f;
-		
-		D3DXVECTOR3 m_vLookAt( 0, 0, 1 );
-		D3DXVECTOR3 m_vModelCenter( 0, 0, 0 );
-
-		// Update the eye point based on a radius away from the lookAt position
-		D3DXVECTOR3 m_vEye = m_vLookAt - vWorldAhead * m_fRadius;
-
-		// Update the view matrix
-		D3DXMatrixLookAtLH( &m_mView, &m_vEye, &m_vLookAt, &vWorldUp );
-
-		D3DXMATRIX m_mModelRot;
-		D3DXMatrixIdentity( &m_mModelRot );
-
-		// Since we're accumulating delta rotations, we need to orthonormalize 
-		// the matrix to prevent eventual matrix skew
-		D3DXVECTOR3* pXBasis = ( D3DXVECTOR3* )&m_mModelRot._11;
-		D3DXVECTOR3* pYBasis = ( D3DXVECTOR3* )&m_mModelRot._21;
-		D3DXVECTOR3* pZBasis = ( D3DXVECTOR3* )&m_mModelRot._31;
-		D3DXVec3Normalize( pXBasis, pXBasis );
-		D3DXVec3Cross( pYBasis, pZBasis, pXBasis );
-		D3DXVec3Normalize( pYBasis, pYBasis );
-		D3DXVec3Cross( pZBasis, pXBasis, pYBasis );
-
-		// Translate the rotation matrix to the same position as the lookAt position
-		m_mModelRot._41 = m_vLookAt.x;
-		m_mModelRot._42 = m_vLookAt.y;
-		m_mModelRot._43 = m_vLookAt.z;
-
-		// Translate world matrix so its at the center of the model
-		D3DXMATRIX mTrans;
-		D3DXMatrixTranslation( &mTrans, -m_vModelCenter.x, -m_vModelCenter.y, -m_vModelCenter.z );
-		m_mWorld = mTrans * m_mModelRot;
+		setAspect( width() / (float)height() );
 
 		render();
 	}
@@ -672,9 +619,5 @@ private:
 	ID3D10BlendState*           m_pBlendStateNoBlend;
 	ID3D10RasterizerState*      m_pRasterizerStateNoCull;
 	ID3D10DepthStencilState*	m_pLessEqualDepth;
-
-	D3DXMATRIX					m_mWorld;        // World matrix of model
-	D3DXMATRIX					m_mView;         // View matrix 
-	D3DXMATRIX					m_mProj;         // Projection matrix
 
 };
