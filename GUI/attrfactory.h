@@ -305,6 +305,7 @@ public:
 		editor->layout()->addWidget(spinBox);
 
 		slider = new ctkDoubleSlider(Qt::Horizontal, parent);
+		slider->setFixedWidth(SPIN_WIDTH*2);
 		slider->setFocusPolicy(Qt::NoFocus);
 		slider->setValue(minimum);
 		slider->setRange(minimum, maximum);
