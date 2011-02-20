@@ -7,9 +7,11 @@
 #include <QtGui/QTreeWidget>
 
 #include "ui_qtdxsample.h"
-#include "../common/attrwidget.h"
+#include "../GUI/attrfactory.h"
+#include "../GUI/ctkCollapsibleGroupBox.h"
+#include "../GUI/ctkColorPickerButton.h"
 
-class QtDXSample : public QMainWindow
+__declspec(align(16)) class QtDXSample : public QMainWindow
 {
 	Q_OBJECT
 
@@ -24,13 +26,12 @@ private slots:
 	void	toggleAnimation( bool pressed );
 
 private:
+
 	//! Elapsed Time
 	float	m_fTime;
 
 	//! Timer
 	QTimer	m_timer;
-
-	QSignalMapper	m_signalMapper;
 
 	Ui::QtDXSampleClass ui;
 };

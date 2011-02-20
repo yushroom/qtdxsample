@@ -7,9 +7,12 @@
 #include <QtGui/QTreeWidget>
 
 #include "ui_qtdxsample.h"
-#include "../common/attrwidget.h"
+#include "../GUI/attrfactory.h"
+#include "../GUI/ctkCollapsibleGroupBox.h"
+#include "../GUI/ctkColorPickerButton.h"
 
-class QtDXSample : public QMainWindow
+class DXWidget;
+__declspec(align(16)) class QtDXSample : public QMainWindow
 {
 	Q_OBJECT
 
@@ -17,6 +20,7 @@ public:
 	QtDXSample(QWidget *parent = 0, Qt::WFlags flags = 0);
 	~QtDXSample();
 
+	HRESULT	setCanvas(DXWidget *);
 	void	setVisible(bool);
 
 private slots:
@@ -24,13 +28,12 @@ private slots:
 	void	toggleAnimation( bool pressed );
 
 private:
+
 	//! Elapsed Time
 	float	m_fTime;
 
 	//! Timer
 	QTimer	m_timer;
-
-	QSignalMapper	m_signalMapper;
 
 	Ui::QtDXSampleClass ui;
 };

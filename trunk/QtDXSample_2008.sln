@@ -2,12 +2,26 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QtD2DSample", "QtD2DSample\QtD2DSample.vcproj", "{A7C73F57-0D7D-41C5-A6AB-38E62B00FB9F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E639520F-16A3-485D-A8B8-F29905722327} = {E639520F-16A3-485D-A8B8-F29905722327}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QtD3D09Sample", "QtD3D09Sample\QtD3D09Sample.vcproj", "{92C92A70-F659-4133-B8B2-6E1F7BF2CFEE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E639520F-16A3-485D-A8B8-F29905722327} = {E639520F-16A3-485D-A8B8-F29905722327}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QtD3D10Sample", "QtD3D10Sample\QtD3D10Sample.vcproj", "{96F4C4FD-7891-4B32-9FCE-963993B74F54}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E639520F-16A3-485D-A8B8-F29905722327} = {E639520F-16A3-485D-A8B8-F29905722327}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QtD3D11Sample", "QtD3D11Sample\QtD3D11Sample.vcproj", "{2BE3E180-15D3-4EBD-8DA6-2B166A82BF97}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E639520F-16A3-485D-A8B8-F29905722327} = {E639520F-16A3-485D-A8B8-F29905722327}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUI", "GUI\GUI.vcproj", "{E639520F-16A3-485D-A8B8-F29905722327}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +45,10 @@ Global
 		{2BE3E180-15D3-4EBD-8DA6-2B166A82BF97}.Debug|Win32.Build.0 = Debug|Win32
 		{2BE3E180-15D3-4EBD-8DA6-2B166A82BF97}.Release|Win32.ActiveCfg = Release|Win32
 		{2BE3E180-15D3-4EBD-8DA6-2B166A82BF97}.Release|Win32.Build.0 = Release|Win32
+		{E639520F-16A3-485D-A8B8-F29905722327}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E639520F-16A3-485D-A8B8-F29905722327}.Debug|Win32.Build.0 = Debug|Win32
+		{E639520F-16A3-485D-A8B8-F29905722327}.Release|Win32.ActiveCfg = Release|Win32
+		{E639520F-16A3-485D-A8B8-F29905722327}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

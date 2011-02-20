@@ -1,21 +1,112 @@
 #include "stdafx.h"
 #include "QtDXSample.h"
-#include "../common/dxwidget.h"
+#include "../common/d3dwidget.h"
 
 QtDXSample::QtDXSample(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags)
 {
 	ui.setupUi(this);
 
-	m_timer.setInterval( 30 ) ; // in msec 
-	m_timer.setSingleShot( false ) ; 
-	QObject::connect( &m_timer, SIGNAL( timeout() ), this, SLOT( idle() ) ) ; 
-	m_fTime = 0.0f;
+
 }
 
 QtDXSample::~QtDXSample()
 {
 	
+}
+
+HRESULT QtDXSample::setCanvas(DXWidget *canvas)
+{
+	this->setCentralWidget(canvas);
+
+	m_timer.setInterval( 30 ) ; // in msec 
+	m_timer.setSingleShot( false ) ; 
+	QObject::connect( &m_timer, SIGNAL( timeout() ), this, SLOT( idle() ) ) ; 
+	m_fTime = 0.0f;
+
+	ui.paramWidget->setFont(QFont("Tahoma",9));
+
+	QGroupBox* transformGroup = new QGroupBox(ui.scrollAreaWidgetContents);
+	transformGroup->setObjectName(QString::fromUtf8("transformGroup"));
+	transformGroup->setTitle("Transform Attributes");
+	ui.parameterScrollLayout->addWidget(transformGroup);
+	QFormLayout* transformGroupLayout = new QFormLayout(transformGroup);
+	transformGroupLayout->setSpacing(2);
+	transformGroupLayout->setMargin(0);
+	transformGroupLayout->setObjectName(QString::fromUtf8("transformGroupLayout"));
+	transformGroupLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
+
+	{
+		Float3AttrFactory* factory = new Float3AttrFactory(transformGroup);
+		factory->setupUi( "Translate", transformGroupLayout );
+
+		QObject::connect(factory, SIGNAL(setValue(QVector3D)), canvas, SLOT(cameraTranslateChanged(QVector3D)));
+		QObject::connect(canvas, SIGNAL(setCameraTranslate(QVector3D)), factory, SLOT(slotPropertyChanged(QVector3D)));
+
+	}
+	{
+		Float3AttrFactory* factory = new Float3AttrFactory(transformGroup);
+		factory->setupUi( "Rotate", transformGroupLayout );
+	}
+	{
+		Float3AttrFactory* factory = new Float3AttrFactory(transformGroup);
+		factory->setupUi( "Scale", transformGroupLayout );
+	}
+
+	QGroupBox* cameraGroup = new QGroupBox(ui.scrollAreaWidgetContents);
+	cameraGroup->setObjectName(QString::fromUtf8("cameraGroup"));
+	cameraGroup->setTitle("Camera Attributes");
+	ui.parameterScrollLayout->addWidget(cameraGroup);
+	QFormLayout* cameraGroupLayout = new QFormLayout(cameraGroup);
+	cameraGroupLayout->setSpacing(2);
+	cameraGroupLayout->setMargin(0);
+	cameraGroupLayout->setObjectName(QString::fromUtf8("cameraGroupLayout"));
+	cameraGroupLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
+
+	{
+		RangeAttrFactory* factory = new RangeAttrFactory(1,108,1,cameraGroup);
+		factory->setupUi( "Angle of View", cameraGroupLayout );
+
+		QObject::connect(factory, SIGNAL(setValue(double)), canvas, SLOT(angleOfViewChanged(double)));
+		QObject::connect(canvas, SIGNAL(setAngleOfView(double)), factory, SLOT(slotPropertyChanged(double)));
+	}
+	{
+		FloatAttrFactory* factory = new FloatAttrFactory(cameraGroup);
+		factory->setupUi( "Near Clip Plane", cameraGroupLayout );
+
+		QObject::connect(factory, SIGNAL(setValue(double)), canvas, SLOT(farClipPlaneChanged(double)));
+		QObject::connect(canvas, SIGNAL(setFarClipPlane(double)), factory, SLOT(slotPropertyChanged(double)));
+	}
+	{
+		FloatAttrFactory* factory = new FloatAttrFactory(cameraGroup);
+		factory->setupUi( "Far Clip Plane", cameraGroupLayout );
+
+		QObject::connect(factory, SIGNAL(setValue(double)), canvas, SLOT(nearClipPlaneChanged(double)));
+		QObject::connect(canvas, SIGNAL(setNearClipPlane(double)), factory, SLOT(slotPropertyChanged(double)));
+	}
+
+	QGroupBox* movementGroup = new QGroupBox(ui.scrollAreaWidgetContents);
+	movementGroup->setObjectName(QString::fromUtf8("movementGroup"));
+	movementGroup->setTitle("Movement Options");
+	ui.parameterScrollLayout->addWidget(movementGroup);
+	QFormLayout* movementGroupLayout = new QFormLayout(movementGroup);
+	movementGroupLayout->setSpacing(2);
+	movementGroupLayout->setMargin(0);
+	movementGroupLayout->setObjectName(QString::fromUtf8("movementGroupLayout"));
+	movementGroupLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
+
+	{
+		FloatAttrFactory* factory = new FloatAttrFactory(movementGroup);
+		factory->setupUi( "Center of Interest", movementGroupLayout );
+
+		QObject::connect(factory, SIGNAL(setValue(double)), canvas, SLOT(centerOfInterestChanged(double)));
+		QObject::connect(canvas, SIGNAL(setCenterOfInterest(double)), factory, SLOT(slotPropertyChanged(double)));
+	}
+
+	QSpacerItem* verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+	ui.parameterScrollLayout->addItem(verticalSpacer);
+
+	return canvas->initialize();
 }
 
 void QtDXSample::setVisible(bool visible)
@@ -34,11 +125,14 @@ void QtDXSample::setVisible(bool visible)
 
 void QtDXSample::idle()
 {
-	m_fTime += m_timer.interval()/1000.0f;
+	m_fTime += m_timer.interval()/1000.0;
 	//! DirectX Widget
 	DXWidget*	widget = (DXWidget *)this->centralWidget();
 	if(widget)
-		widget->render( m_fTime );
+	{
+		widget->setTime(m_fTime);
+		widget->update();
+	}
 }
 
 void QtDXSample::toggleAnimation(bool pressed)
