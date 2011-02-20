@@ -153,6 +153,19 @@ public:
 			D3DXQuaternionMultiply(&m_orientation, &m_orientation, &rot);
 		}
 
+		{
+			double x = m_orientation.x;
+			double y = m_orientation.y;
+			double z = m_orientation.z;
+			double w = m_orientation.w;
+
+			double yaw = asin(-2*(x*z - w*y));
+			double pitch = atan2(2*(y*z + w*x), w*w - x*x - y*y + z*z);
+			double roll = atan2(2*(x*y + w*z), w*w + x*x - y*y - z*z);
+			
+			emit setCameraRotate(QVector3D(D3DXToDegree(yaw), D3DXToDegree(pitch), D3DXToDegree(roll)));
+		}
+
 		updateViewMatrix();
 	}
 
@@ -203,6 +216,17 @@ public:
 		m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
 		D3DXQuaternionRotationMatrix(&m_orientation, &m_viewMatrix);
+
+		double x = m_orientation.x;
+		double y = m_orientation.y;
+		double z = m_orientation.z;
+		double w = m_orientation.w;
+
+		double yaw = asin(-2*(x*z - w*y));
+		double pitch = atan2(2*(y*z + w*x), w*w - x*x - y*y + z*z);
+		double roll = atan2(2*(x*y + w*z), w*w + x*x - y*y - z*z);
+		
+		emit setCameraRotate(QVector3D(D3DXToDegree(yaw), D3DXToDegree(pitch), D3DXToDegree(roll)));
 	}
 
 	void updateViewMatrix()
@@ -259,6 +283,7 @@ public:
 
 signals:
 	void	setCameraTranslate(QVector3D);
+	void	setCameraRotate(QVector3D);
 	void	setCenterOfInterest(double);
 	void	setAngleOfView(double);
 	void	setNearClipPlane(double);
@@ -268,6 +293,13 @@ public slots:
 	void	cameraTranslateChanged(QVector3D p)
 	{
 		m_target = D3DXVECTOR3(p.x(), p.y(), p.z());
+		updateViewMatrix();
+		update();
+	}
+
+	void	cameraRotateChanged(QVector3D p)
+	{
+		D3DXQuaternionRotationYawPitchRoll(&m_orientation, D3DXToRadian(p.x()), D3DXToRadian(p.y()), D3DXToRadian(p.z()));
 		updateViewMatrix();
 		update();
 	}

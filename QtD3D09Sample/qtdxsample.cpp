@@ -47,6 +47,9 @@ HRESULT QtDXSample::setCanvas(DXWidget *canvas)
 	{
 		Float3AttrFactory* factory = new Float3AttrFactory(transformGroup);
 		factory->setupUi( "Rotate", transformGroupLayout );
+
+		QObject::connect(factory, SIGNAL(setValue(QVector3D)), canvas, SLOT(cameraRotateChanged(QVector3D)));
+		QObject::connect(canvas, SIGNAL(setCameraRotate(QVector3D)), factory, SLOT(slotPropertyChanged(QVector3D)));
 	}
 	{
 		Float3AttrFactory* factory = new Float3AttrFactory(transformGroup);
