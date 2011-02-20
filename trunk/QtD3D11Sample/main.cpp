@@ -10,11 +10,8 @@ int main(int argc, char *argv[])
 	QApplication a(argc, argv);
 	QtDXSample w;
 
-	MyDX11Widget widget;
-	w.setCentralWidget( &widget );
-
 	HRESULT hr;
-	if( FAILED(hr=widget.initialize() ) )
+	if( FAILED(hr=w.setCanvas( new MyDX11Widget(&w))) )
 	{
 		QMessageBox msgBox;
 		msgBox.setWindowTitle(QObject::tr("Failed to initialize DirectX"));

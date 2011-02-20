@@ -11,6 +11,7 @@
 #include "../GUI/ctkCollapsibleGroupBox.h"
 #include "../GUI/ctkColorPickerButton.h"
 
+class DXWidget;
 __declspec(align(16)) class QtDXSample : public QMainWindow
 {
 	Q_OBJECT
@@ -19,6 +20,7 @@ public:
 	QtDXSample(QWidget *parent = 0, Qt::WFlags flags = 0);
 	~QtDXSample();
 
+	HRESULT	setCanvas(DXWidget *);
 	void	setVisible(bool);
 
 private slots:

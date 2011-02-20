@@ -45,7 +45,7 @@
    <property name="minimumSize">
     <size>
      <width>404</width>
-     <height>93</height>
+     <height>111</height>
     </size>
    </property>
    <property name="allowedAreas">
@@ -57,7 +57,34 @@
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="paramWidgetContents"/>
+   <widget class="QWidget" name="paramWidgetContents">
+    <layout class="QHBoxLayout" name="parameterWidgetLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QScrollArea" name="scrollArea">
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="scrollAreaWidgetContents">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>402</width>
+          <height>577</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="parameterScrollLayout"/>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="actionPlayPause">
    <property name="checkable">
