@@ -313,10 +313,8 @@ public:
 		//slider->setPageStep(pageStep);
 		editor->layout()->addWidget(slider);
 
-		QObject::connect(spinBox, SIGNAL(valueChanged(double)), slider, SLOT(setValue(double)));
-		QObject::connect(spinBox, SIGNAL(valueChanged(double)), this, SLOT(slotSetValue(double)));
-		QObject::connect(slider, SIGNAL(valueChanged(double)), spinBox, SLOT(setValue(double)));
-		QObject::connect(slider, SIGNAL(valueChanged(double)), this, SLOT(slotSetValue(double)));
+		QObject::connect(spinBox, SIGNAL(editingFinished()), this, SLOT(slotSetSpinBoxValue()));
+		QObject::connect(slider, SIGNAL(valueChanged(double)), this, SLOT(slotSetSliderValue(double)));
 
 		return editor;
 	}
@@ -339,8 +337,23 @@ public slots:
 	}
 
 protected slots:
-	void slotSetValue(double value)
+	void slotSetSpinBoxValue()
 	{
+		if(!slider || !spinBox) return;
+
+		slider->blockSignals(true);
+		slider->setValue(spinBox->value());
+		slider->blockSignals(false);
+		emit setValue(spinBox->value());
+	}
+
+	void slotSetSliderValue(double value)
+	{
+		if(!spinBox) return;
+
+		spinBox->blockSignals(true);
+		spinBox->setValue(value);
+		spinBox->blockSignals(false);
 		emit setValue(value);
 	}
 
@@ -388,7 +401,7 @@ public:
 		spinBox->setDecimals(3);
 		spinBox->setRange(-10000000,10000000);
 		spinBox->setButtonSymbols(QAbstractSpinBox::NoButtons);
-		QObject::connect(spinBox, SIGNAL(valueChanged(double)), this, SLOT(slotSetValue(double)));
+		QObject::connect(spinBox, SIGNAL(editingFinished()), this, SLOT(slotSetValue()));
 		editor->layout()->addWidget(spinBox);
 
 		return editor;
@@ -408,9 +421,9 @@ public slots:
 	}
 
 protected slots:
-	void slotSetValue(double value)
+	void slotSetValue()
 	{
-		emit setValue(value);
+		emit setValue(spinBox->value());
 	}
 
 protected:
@@ -458,7 +471,7 @@ public:
 			spinBox->setDecimals(3);
 			spinBox->setRange(-10000000,10000000);
 			spinBox->setButtonSymbols(QAbstractSpinBox::NoButtons);
-			QObject::connect(spinBox, SIGNAL(valueChanged(double)), this, SLOT(slotSetValue(double)));
+			QObject::connect(spinBox, SIGNAL(editingFinished()), this, SLOT(slotSetValue()));
 			editor->layout()->addWidget(spinBox);
 			spinBoxes.append(spinBox);
 		}
@@ -483,7 +496,7 @@ public slots:
 	}
 
 protected slots:
-	void slotSetValue(double value)
+	void slotSetValue()
 	{
 		QVector2D v;
 		v.setX( spinBoxes[0]->value() );
@@ -537,7 +550,7 @@ public:
 			spinBox->setDecimals(3);
 			spinBox->setRange(-10000000,10000000);
 			spinBox->setButtonSymbols(QAbstractSpinBox::NoButtons);
-			QObject::connect(spinBox, SIGNAL(valueChanged(double)), this, SLOT(slotSetValue(double)));
+			QObject::connect(spinBox, SIGNAL(editingFinished()), this, SLOT(slotSetValue()));
 			editor->layout()->addWidget(spinBox);
 			spinBoxes.append(spinBox);
 		}
@@ -566,7 +579,7 @@ public slots:
 	}
 
 protected slots:
-	void slotSetValue(double value)
+	void slotSetValue()
 	{
 		if(spinBoxes.count()!=Dim) return;
 
@@ -625,7 +638,7 @@ public:
 			spinBox->setDecimals(3);
 			spinBox->setRange(-10000000,10000000);
 			spinBox->setButtonSymbols(QAbstractSpinBox::NoButtons);
-			QObject::connect(spinBox, SIGNAL(valueChanged(double)), this, SLOT(slotSetValue(double)));
+			QObject::connect(spinBox, SIGNAL(editingFinished()), this, SLOT(slotSetValue()));
 			editor->layout()->addWidget(spinBox);
 			spinBoxes.append(spinBox);
 		}
@@ -658,7 +671,7 @@ public slots:
 	}
 
 protected slots:
-	void slotSetValue(double value)
+	void slotSetValue()
 	{
 		if(spinBoxes.count()!=Dim) return;
 

@@ -54,6 +54,9 @@ HRESULT QtDXSample::setCanvas(DXWidget *canvas)
 	{
 		Float3AttrFactory* factory = new Float3AttrFactory(transformGroup);
 		factory->setupUi( "Scale", transformGroupLayout );
+
+		QObject::connect(factory, SIGNAL(setValue(QVector3D)), canvas, SLOT(cameraScaleChanged(QVector3D)));
+		QObject::connect(canvas, SIGNAL(setCameraScale(QVector3D)), factory, SLOT(slotPropertyChanged(QVector3D)));
 	}
 
 	QGroupBox* cameraGroup = new QGroupBox(ui.scrollAreaWidgetContents);
@@ -77,15 +80,15 @@ HRESULT QtDXSample::setCanvas(DXWidget *canvas)
 		FloatAttrFactory* factory = new FloatAttrFactory(cameraGroup);
 		factory->setupUi( "Near Clip Plane", cameraGroupLayout );
 
-		QObject::connect(factory, SIGNAL(setValue(double)), canvas, SLOT(farClipPlaneChanged(double)));
-		QObject::connect(canvas, SIGNAL(setFarClipPlane(double)), factory, SLOT(slotPropertyChanged(double)));
+		QObject::connect(factory, SIGNAL(setValue(double)), canvas, SLOT(nearClipPlaneChanged(double)));
+		QObject::connect(canvas, SIGNAL(setNearClipPlane(double)), factory, SLOT(slotPropertyChanged(double)));
 	}
 	{
 		FloatAttrFactory* factory = new FloatAttrFactory(cameraGroup);
 		factory->setupUi( "Far Clip Plane", cameraGroupLayout );
 
-		QObject::connect(factory, SIGNAL(setValue(double)), canvas, SLOT(nearClipPlaneChanged(double)));
-		QObject::connect(canvas, SIGNAL(setNearClipPlane(double)), factory, SLOT(slotPropertyChanged(double)));
+		QObject::connect(factory, SIGNAL(setValue(double)), canvas, SLOT(farClipPlaneChanged(double)));
+		QObject::connect(canvas, SIGNAL(setFarClipPlane(double)), factory, SLOT(slotPropertyChanged(double)));
 	}
 
 	QGroupBox* movementGroup = new QGroupBox(ui.scrollAreaWidgetContents);
