@@ -82,7 +82,7 @@ public:
 		float fAspect = width() / (float)height();
 		perspective( 45.0f, fAspect, 0.1f, 5000.0f );
 
-		lookAtCamera( D3DXVECTOR3( 3.86, 2.5, -3.86 ), D3DXVECTOR3( 0, 0, 0 ), D3DXVECTOR3( 0, 1, 0 ) );
+		lookAtCamera( D3DXVECTOR3( 3.857, 2.5, -3.857 ), D3DXVECTOR3( 0, 0, 0 ), D3DXVECTOR3( 0, 1, 0 ) );
 	}
 
 	void setAspect(float aspect)
@@ -227,6 +227,8 @@ public:
 		double roll = atan2(2*(x*y + w*z), w*w + x*x - y*y - z*z);
 		
 		emit setCameraRotate(QVector3D(D3DXToDegree(yaw), D3DXToDegree(pitch), D3DXToDegree(roll)));
+
+		emit setCameraScale(QVector3D(1, 1, 1));
 	}
 
 	void updateViewMatrix()
@@ -284,6 +286,7 @@ public:
 signals:
 	void	setCameraTranslate(QVector3D);
 	void	setCameraRotate(QVector3D);
+	void	setCameraScale(QVector3D);
 	void	setCenterOfInterest(double);
 	void	setAngleOfView(double);
 	void	setNearClipPlane(double);
@@ -302,6 +305,10 @@ public slots:
 		D3DXQuaternionRotationYawPitchRoll(&m_orientation, D3DXToRadian(p.x()), D3DXToRadian(p.y()), D3DXToRadian(p.z()));
 		updateViewMatrix();
 		update();
+	}
+
+	void	cameraScaleChanged(QVector3D p)
+	{
 	}
 
 	void	angleOfViewChanged(double value)
