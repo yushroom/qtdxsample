@@ -154,16 +154,11 @@ public:
 		}
 
 		{
-			double x = m_orientation.x;
-			double y = m_orientation.y;
-			double z = m_orientation.z;
-			double w = m_orientation.w;
-
-			double yaw = asin(-2*(x*z - w*y));
-			double pitch = atan2(2*(y*z + w*x), w*w - x*x - y*y + z*z);
-			double roll = atan2(2*(x*y + w*z), w*w + x*x - y*y - z*z);
-			
-			emit setCameraRotate(QVector3D(D3DXToDegree(yaw), D3DXToDegree(pitch), D3DXToDegree(roll)));
+			D3DXVECTOR3 euler;
+			if( QuaternionToYawPitchRoll(euler,m_orientation) )
+			{
+				emit setCameraRotate(QVector3D(D3DXToDegree(euler.x), D3DXToDegree(euler.y), D3DXToDegree(euler.z)));
+			}
 		}
 
 		updateViewMatrix();
@@ -217,19 +212,82 @@ public:
 
 		D3DXQuaternionRotationMatrix(&m_orientation, &m_viewMatrix);
 
-		double x = m_orientation.x;
-		double y = m_orientation.y;
-		double z = m_orientation.z;
-		double w = m_orientation.w;
-
-		double yaw = asin(-2*(x*z - w*y));
-		double pitch = atan2(2*(y*z + w*x), w*w - x*x - y*y + z*z);
-		double roll = atan2(2*(x*y + w*z), w*w + x*x - y*y - z*z);
-		
-		emit setCameraRotate(QVector3D(D3DXToDegree(yaw), D3DXToDegree(pitch), D3DXToDegree(roll)));
+		D3DXVECTOR3 euler;
+		if( QuaternionToYawPitchRoll(euler,m_orientation) )
+		{
+			emit setCameraRotate(QVector3D(D3DXToDegree(euler.x), D3DXToDegree(euler.y), D3DXToDegree(euler.z)));
+		}
 
 		emit setCameraScale(QVector3D(1, 1, 1));
 	}
+
+	static D3DXQUATERNION CreateFromYawPitchRoll(D3DXVECTOR3 radian)
+	{
+		float xRadian = radian.x * 0.5f;
+		float yRadian = radian.y * 0.5f;
+		float zRadian = radian.z * 0.5f;
+		float sinX = sin(xRadian);
+		float cosX = cos(xRadian);
+		float sinY = sin(yRadian);
+		float cosY = cos(yRadian);
+		float sinZ = sin(zRadian);
+		float cosZ = cos(zRadian);
+		float x = (float)(sinX * cosY * cosZ - cosX * sinY * sinZ);
+		float y = (float)(cosX * sinY * cosZ + sinX * cosY * sinZ);
+		float z = (float)(cosX * cosY * sinZ - sinX * sinY * cosZ);
+		float w = (float)(cosX * cosY * cosZ + sinX * sinY * sinZ);
+		return D3DXQUATERNION(x,y,z,w);
+	}
+
+	static bool QuaternionToYawPitchRoll(D3DXVECTOR3 &radian, D3DXQUATERNION q)
+	{
+		float x = q.x;
+		float y = q.y;
+		float z = q.z;
+		float w = q.w;
+
+		//
+		float x2 = x + x;
+		float y2 = y + y;
+		float z2 = z + z;
+		float xz2 = x * z2;
+		float wy2 = w * y2;
+		float temp = -(xz2 - wy2);
+		//
+		if(temp >= 1){ temp = 1; }
+		else if(temp <= -1){ temp = -1; }
+		float yRadian = asin(temp);
+		radian.y = (float)yRadian;
+		//
+		float xx2 = x * x2;
+		float xy2 = x * y2;
+		float zz2 = z * z2;
+		float wz2 = w * z2;
+		if(yRadian < M_PI * 0.5)
+		{
+			if(yRadian > -M_PI * 0.5)
+			{
+				float yz2 = y * z2;
+				float wx2 = w * x2;
+				float yy2 = y * y2;
+				radian.x = (float)atan2((yz2 + wx2), (1 - (xx2 + yy2)));
+				radian.z = (float)atan2((xy2 + wz2), (1 - (yy2 + zz2)));
+				return true;
+			}
+			else
+			{
+				radian.x = -(float)atan2((xy2 - wz2), (1 - (xx2 + zz2)));
+				radian.z = 0;
+				return false;
+			}
+		}
+		else
+		{
+			radian.x = (float)atan2((xy2 - wz2), (1 - (xx2 + zz2)));
+			radian.z = 0;
+			return false;
+		}
+	}//method
 
 	void updateViewMatrix()
 	{
@@ -302,7 +360,7 @@ public slots:
 
 	void	cameraRotateChanged(QVector3D p)
 	{
-		D3DXQuaternionRotationYawPitchRoll(&m_orientation, D3DXToRadian(p.x()), D3DXToRadian(p.y()), D3DXToRadian(p.z()));
+		m_orientation = CreateFromYawPitchRoll(D3DXVECTOR3(D3DXToRadian(p.x()), D3DXToRadian(p.y()), D3DXToRadian(p.z())));
 		updateViewMatrix();
 		update();
 	}
