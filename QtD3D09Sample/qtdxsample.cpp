@@ -24,15 +24,16 @@ HRESULT QtDXSample::setCanvas(DXWidget *canvas)
 	QObject::connect( &m_timer, SIGNAL( timeout() ), this, SLOT( idle() ) ) ; 
 	m_fTime = 0.0f;
 
-	ui.paramWidget->setFont(QFont("Tahoma",9));
+	ui.paramWidget->setFont(QFont("Tahoma",8));
+	ui.parameterScrollLayout->setMargin(4);
 
 	QGroupBox* transformGroup = new QGroupBox(ui.scrollAreaWidgetContents);
 	transformGroup->setObjectName(QString::fromUtf8("transformGroup"));
 	transformGroup->setTitle("Transform Attributes");
 	ui.parameterScrollLayout->addWidget(transformGroup);
 	QFormLayout* transformGroupLayout = new QFormLayout(transformGroup);
-	transformGroupLayout->setSpacing(2);
-	transformGroupLayout->setMargin(0);
+	transformGroupLayout->setSpacing(AttrFactory::GROUP_SPACING);
+	transformGroupLayout->setMargin(AttrFactory::GROUP_MARGIN);
 	transformGroupLayout->setObjectName(QString::fromUtf8("transformGroupLayout"));
 	transformGroupLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
 
@@ -64,8 +65,8 @@ HRESULT QtDXSample::setCanvas(DXWidget *canvas)
 	cameraGroup->setTitle("Camera Attributes");
 	ui.parameterScrollLayout->addWidget(cameraGroup);
 	QFormLayout* cameraGroupLayout = new QFormLayout(cameraGroup);
-	cameraGroupLayout->setSpacing(2);
-	cameraGroupLayout->setMargin(0);
+	cameraGroupLayout->setSpacing(AttrFactory::GROUP_SPACING);
+	cameraGroupLayout->setMargin(AttrFactory::GROUP_MARGIN);
 	cameraGroupLayout->setObjectName(QString::fromUtf8("cameraGroupLayout"));
 	cameraGroupLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
 
@@ -96,8 +97,8 @@ HRESULT QtDXSample::setCanvas(DXWidget *canvas)
 	movementGroup->setTitle("Movement Options");
 	ui.parameterScrollLayout->addWidget(movementGroup);
 	QFormLayout* movementGroupLayout = new QFormLayout(movementGroup);
-	movementGroupLayout->setSpacing(2);
-	movementGroupLayout->setMargin(0);
+	movementGroupLayout->setSpacing(AttrFactory::GROUP_SPACING);
+	movementGroupLayout->setMargin(AttrFactory::GROUP_MARGIN);
 	movementGroupLayout->setObjectName(QString::fromUtf8("movementGroupLayout"));
 	movementGroupLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
 

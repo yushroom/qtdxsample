@@ -30,9 +30,11 @@ class AttrFactory : public QObject
 public:
 	enum
 	{
-		LABEL_MARGIN = 4,
+		GROUP_MARGIN = 2,
+		GROUP_SPACING = 0,
+		LABEL_MARGIN = 2,
 		FIELD_MARGIN = 1,
-		FIELD_SPACING = 4,
+		FIELD_SPACING = 2,
 		SPIN_WIDTH = 66,
 		LABEL_WIDTH = 132,
 		FIELD_WIDTH = 206,
@@ -293,7 +295,7 @@ public:
 	virtual QWidget*	createEditor(QWidget *parent = 0)
 	{
 		QWidget *editor = AttrFactory::createEditor(parent);
-		editor->layout()->setSpacing(6);
+		editor->layout()->setSpacing(4);
 
 		spinBox = new QDoubleSpinBox(parent);
 		spinBox->setFixedWidth(SPIN_WIDTH);
@@ -307,6 +309,7 @@ public:
 		slider = new ctkDoubleSlider(Qt::Horizontal, parent);
 		slider->setFixedWidth(SPIN_WIDTH*2);
 		slider->setFocusPolicy(Qt::NoFocus);
+		slider->layout()->itemAt(0)->widget()->setFocusPolicy(Qt::NoFocus);
 		slider->setValue(minimum);
 		slider->setRange(minimum, maximum);
 		slider->setSingleStep(singleStep);
