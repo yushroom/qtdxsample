@@ -33,7 +33,28 @@
 #include <string>
 #include <iostream>
 
-#include <windows.h>
+#if defined(_MSC_VER)
+	#include <windows.h>
+	#define ALIGN(n) __declspec(align(n))
+#else
+	#define ALIGN(n) __attribute__((aligned(n)))
+#endif
+
+#if 0
+	// SIMD ver.
+	#include "../vectormath/sse/vectormath_aos.h"
+#else
+	#include "../vectormath/scalar/vectormath_aos.h"
+#endif
+
+typedef Vectormath::Aos::Vector3    vmVector3;
+typedef Vectormath::Aos::Vector3    vmVector4;
+typedef Vectormath::Aos::Quat       vmQuat;
+typedef Vectormath::Aos::Matrix3    vmMatrix3;
+typedef Vectormath::Aos::Matrix4    vmMatrix4;
+typedef Vectormath::Aos::Transform3 vmTransform3;
+typedef Vectormath::Aos::Point3     vmPoint3;
+
 
 #ifdef USE_D2D
 	#include <d2d1.h>
@@ -107,6 +128,14 @@
 #endif    
 #ifndef SAFE_RELEASE
 #define SAFE_RELEASE(p)      { if (p) { (p)->Release(); (p)=NULL; } }
+#endif
+
+#ifndef D3DXToRadian
+#define D3DXToRadian(degree) ((degree) * (M_PI / 180.0f))
+#endif
+
+#ifndef D3DXToDegree
+#define D3DXToDegree( radian ) ((radian) * (180.0f / M_PI))
 #endif
 
 #ifndef DIRECT3D_VERSION
