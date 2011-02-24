@@ -27,7 +27,7 @@ HRESULT QtDXSample::setCanvas(DXWidget *canvas)
 	ui.paramWidget->setFont(QFont("Tahoma",8));
 	ui.parameterScrollLayout->setMargin(4);
 
-	QGroupBox* transformGroup = new QGroupBox(ui.scrollAreaWidgetContents);
+	ctkCollapsibleGroupBox* transformGroup = new ctkCollapsibleGroupBox(ui.scrollAreaWidgetContents);
 	transformGroup->setObjectName(QString::fromUtf8("transformGroup"));
 	transformGroup->setTitle("Transform Attributes");
 	ui.parameterScrollLayout->addWidget(transformGroup);
@@ -60,7 +60,7 @@ HRESULT QtDXSample::setCanvas(DXWidget *canvas)
 		QObject::connect(canvas, SIGNAL(setCameraScale(QVector3D)), factory, SLOT(slotPropertyChanged(QVector3D)));
 	}
 
-	QGroupBox* cameraGroup = new QGroupBox(ui.scrollAreaWidgetContents);
+	ctkCollapsibleGroupBox* cameraGroup = new ctkCollapsibleGroupBox(ui.scrollAreaWidgetContents);
 	cameraGroup->setObjectName(QString::fromUtf8("cameraGroup"));
 	cameraGroup->setTitle("Camera Attributes");
 	ui.parameterScrollLayout->addWidget(cameraGroup);
@@ -92,7 +92,7 @@ HRESULT QtDXSample::setCanvas(DXWidget *canvas)
 		QObject::connect(canvas, SIGNAL(setFarClipPlane(double)), factory, SLOT(slotPropertyChanged(double)));
 	}
 
-	QGroupBox* movementGroup = new QGroupBox(ui.scrollAreaWidgetContents);
+	ctkCollapsibleGroupBox* movementGroup = new ctkCollapsibleGroupBox(ui.scrollAreaWidgetContents);
 	movementGroup->setObjectName(QString::fromUtf8("movementGroup"));
 	movementGroup->setTitle("Movement Options");
 	ui.parameterScrollLayout->addWidget(movementGroup);

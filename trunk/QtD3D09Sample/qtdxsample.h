@@ -12,7 +12,7 @@
 #include "../GUI/ctkColorPickerButton.h"
 
 class DXWidget;
-__declspec(align(16)) class QtDXSample : public QMainWindow
+ALIGN(16) class QtDXSample : public QMainWindow
 {
 	Q_OBJECT
 
