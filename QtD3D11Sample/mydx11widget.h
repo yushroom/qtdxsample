@@ -3,7 +3,7 @@
 #define USE_D3D 11
 #include "../common/d3dwidget.h"
 
-ALIGN(16) class MyDX11Widget : public DXWidget
+class MyDX11Widget : public DXWidget
 {
 	//Q_OBJECT
 
@@ -412,7 +412,7 @@ public:
 
 		clearScene( D3DXCOLOR( 0.0f, 0.25f, 0.25f, 0.55f ), 1.0f, 0 );
 
-		D3DXMATRIXA16 mWorldViewProj = D3DXMATRIXA16((float*)&m_viewMatrix) * D3DXMATRIXA16((float*)&m_projMatrix);
+		D3DXMATRIXA16 mWorldViewProj = D3DXMATRIXA16((float*)&ViewMatrix()) * D3DXMATRIXA16((float*)&ProjMatrix());
 		// DX11 spec only guarantees Sincos function from -110 * Pi to 110 * Pi
 		float fBoundedTime = (float) m_fTime - (floor( (float) m_fTime / (2.0f * D3DX_PI)) * 2.0f * D3DX_PI);
 
