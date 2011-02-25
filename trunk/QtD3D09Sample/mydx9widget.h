@@ -4,7 +4,7 @@
 #include "../common/d3dwidget.h"
 #include "../common/logging.h"
 
-ALIGN(16) class MyDX9Widget : public DXWidget
+class MyDX9Widget : public DXWidget
 {
 	//Q_OBJECT
 
@@ -241,7 +241,7 @@ public:
 
 		if( SUCCEEDED(beginScene()) )
 		{
-			D3DXMATRIXA16 mWorldViewProj = D3DXMATRIXA16((float*)&m_viewMatrix) * D3DXMATRIXA16((float*)&m_projMatrix);
+			D3DXMATRIXA16 mWorldViewProj = D3DXMATRIXA16((float*)&ViewMatrix()) * D3DXMATRIXA16((float*)&ProjMatrix());
 			// DX10 spec only guarantees Sincos function from -100 * Pi to 100 * Pi
 			float fBoundedTime = (float) m_fTime - (floor( (float) m_fTime / (2.0f * D3DX_PI)) * 2.0f * D3DX_PI);
 

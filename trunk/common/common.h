@@ -40,7 +40,7 @@
 	#define ALIGN(n) __attribute__((aligned(n)))
 #endif
 
-#if 0
+#if 1
 	// SIMD ver.
 	#include "../vectormath/sse/vectormath_aos.h"
 #else
@@ -48,7 +48,7 @@
 #endif
 
 typedef Vectormath::Aos::Vector3    vmVector3;
-typedef Vectormath::Aos::Vector3    vmVector4;
+typedef Vectormath::Aos::Vector4    vmVector4;
 typedef Vectormath::Aos::Quat       vmQuat;
 typedef Vectormath::Aos::Matrix3    vmMatrix3;
 typedef Vectormath::Aos::Matrix4    vmMatrix4;
