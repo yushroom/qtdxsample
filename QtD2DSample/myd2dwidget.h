@@ -1,7 +1,7 @@
 #pragma once
 
 #define USE_D2D 1
-#include "../common/dxwidget.h"
+#include "../common/d3dwidget.h"
 
 class MyD2DWidget : public DXWidget
 {

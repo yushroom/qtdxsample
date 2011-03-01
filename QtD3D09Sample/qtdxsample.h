@@ -12,9 +12,10 @@
 #include "../GUI/ctkColorPickerButton.h"
 
 class DXWidget;
-ALIGN(16) class QtDXSample : public QMainWindow
+class QtDXSample : public QMainWindow
 {
 	Q_OBJECT
+	BT_DECLARE_ALIGNED_ALLOCATOR()
 
 public:
 	QtDXSample(QWidget *parent = 0, Qt::WFlags flags = 0);
