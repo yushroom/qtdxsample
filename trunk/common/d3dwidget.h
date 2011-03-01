@@ -1,7 +1,6 @@
 #pragma once
 
 #include "common.h"
-#include "D3DMathHelper.h"
 #include "../common/logging.h"
 
 #include <QWidget>
@@ -13,7 +12,10 @@
 class DXWidget : public QWidget
 {
 	Q_OBJECT
+
 public:
+	BT_DECLARE_ALIGNED_ALLOCATOR()
+
 	DXWidget( QWidget *parent = 0, Qt::WFlags flags = 0 ) : QWidget( parent, flags )
 	{
 		setAttribute(Qt::WA_PaintOnScreen);
@@ -23,7 +25,6 @@ public:
 		m_lastRendered = 0;
 		m_fTime = 0;
 		m_camera = (Camera*)_aligned_malloc(sizeof(Camera),16);
-		//m_camera = new ALIGN(16) Camera();
 	}
 	virtual ~DXWidget()
 	{
@@ -140,8 +141,8 @@ public:
 		pitchDegrees = -pitchDegrees;
 		headingDegrees = -headingDegrees;
 
-		float heading = D3DXToRadian(headingDegrees);
-		float pitch = D3DXToRadian(pitchDegrees);
+		float heading = btRadians(headingDegrees);
+		float pitch = btRadians(pitchDegrees);
 
 		vmQuat rot;
 		const vmVector3 WORLD_XAXIS(1.0f, 0.0f, 0.0f);
@@ -162,7 +163,7 @@ public:
 			vmVector3 euler;
 			if( QuaternionToYawPitchRoll(euler, m_camera->m_orientation) )
 			{
-				emit setCameraRotate(QVector3D(D3DXToDegree(euler[0]), D3DXToDegree(euler[1]), D3DXToDegree(euler[2])));
+				emit setCameraRotate(QVector3D(btDegrees(euler[0]), btDegrees(euler[1]), btDegrees(euler[2])));
 			}
 		}
 
@@ -192,36 +193,25 @@ public:
 		m_camera->m_xAxis = normalize(cross(up, m_camera->m_zAxis));
 		m_camera->m_yAxis = normalize(cross(m_camera->m_zAxis, m_camera->m_xAxis));
 
-		//m_viewMatrix = vmMatrix4::lookAt(vmPoint3(eye), vmPoint3(target), up);
-		m_camera->m_viewMatrix = vmMatrix4::identity();
+		//m_camera->m_viewMatrix = vmMatrix4::lookAt(vmPoint3(eye), vmPoint3(target), up);
 
-		m_camera->m_viewMatrix.setElem(0,0, m_camera->m_xAxis[0]);
-		m_camera->m_viewMatrix.setElem(1,0, m_camera->m_xAxis[1]);
-		m_camera->m_viewMatrix.setElem(2,0, m_camera->m_xAxis[2]);
-		m_camera->m_viewMatrix.setElem(3,0, -dot(m_camera->m_xAxis, eye));
-
-		m_camera->m_viewMatrix.setElem(0,1, m_camera->m_yAxis[0]);
-		m_camera->m_viewMatrix.setElem(1,1, m_camera->m_yAxis[1]);
-		m_camera->m_viewMatrix.setElem(2,1, m_camera->m_yAxis[2]);
-		m_camera->m_viewMatrix.setElem(3,1, -dot(m_camera->m_yAxis, eye));
-
-		m_camera->m_viewMatrix.setElem(0,2, m_camera->m_zAxis[0]);
-		m_camera->m_viewMatrix.setElem(1,2, m_camera->m_zAxis[1]);
-		m_camera->m_viewMatrix.setElem(2,2, m_camera->m_zAxis[2]);
-		m_camera->m_viewMatrix.setElem(3,2, -dot(m_camera->m_zAxis, eye));
-		
+		m_camera->m_viewMatrix.setRow( 0, vmVector4(m_camera->m_xAxis, -dot(m_camera->m_xAxis, eye)) );
+		m_camera->m_viewMatrix.setRow( 1, vmVector4(m_camera->m_yAxis, -dot(m_camera->m_yAxis, eye)) );
+		m_camera->m_viewMatrix.setRow( 2, vmVector4(m_camera->m_zAxis, -dot(m_camera->m_zAxis, eye)) );
+		m_camera->m_viewMatrix.setRow( 3, vmVector4(0,0,0,1) );
+	
 		m_camera->m_orientation = vmQuat(m_camera->m_viewMatrix.getUpper3x3());
 
 		vmVector3 euler;
 		if( QuaternionToYawPitchRoll(euler, m_camera->m_orientation) )
 		{
-			emit setCameraRotate(QVector3D(D3DXToDegree(euler[0]), D3DXToDegree(euler[1]), D3DXToDegree(euler[2])));
+			emit setCameraRotate(QVector3D(btDegrees(euler[0]), btDegrees(euler[1]), btDegrees(euler[2])));
 		}
 
 		emit setCameraScale(QVector3D(1, 1, 1));
 	}
 
-	static vmQuat CreateFromYawPitchRoll(const vmVector3 &radian)
+	static vmQuat YawPitchRollToQuaternion(const vmVector3 &radian)
 	{
 		float xRadian = radian[0] * 0.5f;
 		float yRadian = radian[1] * 0.5f;
@@ -263,9 +253,9 @@ public:
 		float xy2 = x * y2;
 		float zz2 = z * z2;
 		float wz2 = w * z2;
-		if(yRadian < M_PI * 0.5)
+		if(yRadian < SIMD_PI * 0.5)
 		{
-			if(yRadian > -M_PI * 0.5)
+			if(yRadian > -SIMD_PI * 0.5)
 			{
 				float yz2 = y * z2;
 				float wx2 = w * x2;
@@ -296,45 +286,45 @@ public:
 		m_camera->m_orientation = normalize(m_camera->m_orientation);
 		m_camera->m_viewMatrix = vmMatrix4::rotation(m_camera->m_orientation);
 
-		m_camera->m_xAxis = vmVector3(m_camera->m_viewMatrix.getElem(0,0), m_camera->m_viewMatrix.getElem(1,0), m_camera->m_viewMatrix.getElem(2,0));
-		m_camera->m_yAxis = vmVector3(m_camera->m_viewMatrix.getElem(0,1), m_camera->m_viewMatrix.getElem(1,1), m_camera->m_viewMatrix.getElem(2,1));
-		m_camera->m_zAxis = vmVector3(m_camera->m_viewMatrix.getElem(0,2), m_camera->m_viewMatrix.getElem(1,2), m_camera->m_viewMatrix.getElem(2,2));
+		m_camera->m_xAxis = m_camera->m_viewMatrix.getRow(0).getXYZ();
+		m_camera->m_yAxis = m_camera->m_viewMatrix.getRow(1).getXYZ();
+		m_camera->m_zAxis = m_camera->m_viewMatrix.getRow(2).getXYZ();
 		m_camera->m_viewDir = m_camera->m_zAxis;
 
 		m_camera->m_eye = m_camera->m_target + m_camera->m_viewDir * -m_camera->m_centerOfInterest;
 
-		m_camera->m_viewMatrix.setElem(3,0, -dot(m_camera->m_xAxis, m_camera->m_eye));
-		m_camera->m_viewMatrix.setElem(3,1, -dot(m_camera->m_yAxis, m_camera->m_eye));
-		m_camera->m_viewMatrix.setElem(3,2, -dot(m_camera->m_zAxis, m_camera->m_eye));
+		m_camera->m_viewMatrix[3][0] = -dot(m_camera->m_xAxis, m_camera->m_eye);
+		m_camera->m_viewMatrix[3][1] = -dot(m_camera->m_yAxis, m_camera->m_eye);
+		m_camera->m_viewMatrix[3][2] = -dot(m_camera->m_zAxis, m_camera->m_eye);
 	}
 
 	void updateProjectionMatrix()
 	{
-		float e = 1.0f / tanf(D3DXToRadian(m_camera->m_fovx) / 2.0f);
+		float e = 1.0f / tanf(btRadians(m_camera->m_fovx) / 2.0f);
 		float aspectInv = 1.0f / m_camera->m_aspect;
 		float fovy = 2.0f * atanf(aspectInv / e);
 		float xScale = 1.0f / tanf(0.5f * fovy);
 		float yScale = xScale / aspectInv;
 
-		m_camera->m_projMatrix.setElem(0,0, xScale);
-		m_camera->m_projMatrix.setElem(1,0, 0.0f);
-		m_camera->m_projMatrix.setElem(2,0, 0.0f);
-		m_camera->m_projMatrix.setElem(3,0, 0.0f);
+		m_camera->m_projMatrix[0][0] = xScale;
+		m_camera->m_projMatrix[1][0] = 0.0f;
+		m_camera->m_projMatrix[2][0] = 0.0f;
+		m_camera->m_projMatrix[3][0] = 0.0f;
 
-		m_camera->m_projMatrix.setElem(0,1, 0.0f);
-		m_camera->m_projMatrix.setElem(1,1, yScale);
-		m_camera->m_projMatrix.setElem(2,1, 0.0f);
-		m_camera->m_projMatrix.setElem(3,1, 0.0f);
+		m_camera->m_projMatrix[0][1] = 0.0f;
+		m_camera->m_projMatrix[1][1] = yScale;
+		m_camera->m_projMatrix[2][1] = 0.0f;
+		m_camera->m_projMatrix[3][1] = 0.0f;
 
-		m_camera->m_projMatrix.setElem(0,2, 0.0f);
-		m_camera->m_projMatrix.setElem(1,2, 0.0f);
-		m_camera->m_projMatrix.setElem(2,2, m_camera->m_zfar / (m_camera->m_zfar - m_camera->m_znear));
-		m_camera->m_projMatrix.setElem(3,2, -m_camera->m_znear * m_camera->m_zfar / (m_camera->m_zfar - m_camera->m_znear));
+		m_camera->m_projMatrix[0][2] = 0.0f;
+		m_camera->m_projMatrix[1][2] = 0.0f;
+		m_camera->m_projMatrix[2][2] = m_camera->m_zfar / (m_camera->m_zfar - m_camera->m_znear);
+		m_camera->m_projMatrix[3][2] = -m_camera->m_znear * m_camera->m_zfar / (m_camera->m_zfar - m_camera->m_znear);
 
-		m_camera->m_projMatrix.setElem(0,3, 0.0f);
-		m_camera->m_projMatrix.setElem(1,3, 0.0f);
-		m_camera->m_projMatrix.setElem(2,3, 1.0f);
-		m_camera->m_projMatrix.setElem(3,3, 0.0f);
+		m_camera->m_projMatrix[0][3] = 0.0f;
+		m_camera->m_projMatrix[1][3] = 0.0f;
+		m_camera->m_projMatrix[2][3] = 1.0f;
+		m_camera->m_projMatrix[3][3] = 0.0f;
 	}
 
 signals:
@@ -356,7 +346,7 @@ public slots:
 
 	void	cameraRotateChanged(QVector3D p)
 	{
-		m_camera->m_orientation = CreateFromYawPitchRoll(vmVector3(D3DXToRadian(p.x()), D3DXToRadian(p.y()), D3DXToRadian(p.z())));
+		m_camera->m_orientation = YawPitchRollToQuaternion(vmVector3(btRadians(p.x()), btRadians(p.y()), btRadians(p.z())));
 		updateViewMatrix();
 		update();
 	}
@@ -499,7 +489,7 @@ protected:
 		update();
 	}
 
-	ALIGN(16) struct Camera
+	ATTRIBUTE_ALIGNED16(struct Camera)
 	{
 		// View matrix
 		vmMatrix4	m_viewMatrix;

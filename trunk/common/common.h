@@ -28,17 +28,104 @@
 #include <functional>
 #include <cassert>
 #include <cmath>
+#include <cfloat>
 
 #include <sstream>
 #include <string>
 #include <iostream>
 
-#if defined(_MSC_VER)
-	#include <windows.h>
-	#define ALIGN(n) __declspec(align(n))
+#ifdef _WIN32
+	#if defined(__MINGW32__) || defined(__CYGWIN__) || (defined (_MSC_VER) && _MSC_VER < 1300)
+
+		#define SIMD_FORCE_INLINE inline
+		#define ATTRIBUTE_ALIGNED16(a) a
+		#define ATTRIBUTE_ALIGNED64(a) a
+		#define ATTRIBUTE_ALIGNED128(a) a
+		#define btAlignedAlloc(size,alignment) malloc(size)
+		#define btAlignedFree(ptr) free(ptr)
+	#else
+
+		#include <windows.h>
+
+		#define SIMD_FORCE_INLINE __forceinline
+		#define ATTRIBUTE_ALIGNED16(a) __declspec(align(16)) a
+		#define ATTRIBUTE_ALIGNED64(a) __declspec(align(64)) a
+		#define ATTRIBUTE_ALIGNED128(a) __declspec (align(128)) a
+		#define btAlignedAlloc(size,alignment) _aligned_malloc(size, (size_t)alignment)
+		#define btAlignedFree(ptr) _aligned_free(ptr)
+
+		#if ((_MSC_VER) && _MSC_VER >= 1400) && (!defined (BT_USE_DOUBLE_PRECISION))
+			#define BT_USE_SSE
+			#include <emmintrin.h>
+		#endif
+
+	#endif //__MINGW32__
 #else
-	#define ALIGN(n) __attribute__((aligned(n)))
+	//non-windows systems
+
+	#define BT_USE_SSE
+	#include <emmintrin.h>
+
+	#define SIMD_FORCE_INLINE inline
+	#define ATTRIBUTE_ALIGNED16(a) a __attribute__ ((aligned (16)))
+	#define ATTRIBUTE_ALIGNED64(a) a __attribute__ ((aligned (64)))
+	#define ATTRIBUTE_ALIGNED128(a) a __attribute__ ((aligned (128)))
+	#define btAlignedAlloc(size,alignment) memalign(size, (size_t)alignment)
+	#define btAlignedFree(ptr) free(ptr)
 #endif
+
+
+#define BT_DECLARE_ALIGNED_ALLOCATOR() \
+   SIMD_FORCE_INLINE void* operator new(size_t sizeInBytes)   { return btAlignedAlloc(sizeInBytes,16); }   \
+   SIMD_FORCE_INLINE void  operator delete(void* ptr)         { btAlignedFree(ptr); }   \
+   SIMD_FORCE_INLINE void* operator new(size_t, void* ptr)   { return ptr; }   \
+   SIMD_FORCE_INLINE void  operator delete(void*, void*)      { }   \
+   SIMD_FORCE_INLINE void* operator new[](size_t sizeInBytes)   { return btAlignedAlloc(sizeInBytes,16); }   \
+   SIMD_FORCE_INLINE void  operator delete[](void* ptr)         { btAlignedFree(ptr); }   \
+   SIMD_FORCE_INLINE void* operator new[](size_t, void* ptr)   { return ptr; }   \
+   SIMD_FORCE_INLINE void  operator delete[](void*, void*)      { }   \
+
+///The btScalar type abstracts floating point numbers, to easily switch between double and single floating point precision.
+#if defined(BT_USE_DOUBLE_PRECISION)
+typedef double btScalar;
+//this number could be bigger in double precision
+#define BT_LARGE_FLOAT 1e30
+#else
+typedef float btScalar;
+//keep BT_LARGE_FLOAT*BT_LARGE_FLOAT < FLT_MAX
+#define BT_LARGE_FLOAT 1e18f
+#endif
+
+#define SIMD_2_PI         btScalar(6.283185307179586232)
+#define SIMD_PI           (SIMD_2_PI * btScalar(0.5))
+#define SIMD_HALF_PI      (SIMD_2_PI * btScalar(0.25))
+#define SIMD_RADS_PER_DEG (SIMD_2_PI / btScalar(360.0))
+#define SIMD_DEGS_PER_RAD  (btScalar(360.0) / SIMD_2_PI)
+#define SIMDSQRT12 btScalar(0.7071067811865475244008443621048490)
+
+#ifdef BT_USE_DOUBLE_PRECISION
+#define SIMD_EPSILON      DBL_EPSILON
+#define SIMD_INFINITY     DBL_MAX
+#else
+#define SIMD_EPSILON      FLT_EPSILON
+#define SIMD_INFINITY     FLT_MAX
+#endif
+
+SIMD_FORCE_INLINE bool      btFuzzyZero(btScalar x) { return fabs(x) < SIMD_EPSILON; }
+
+SIMD_FORCE_INLINE bool	btEqual(btScalar a, btScalar eps) {
+	return (((a) <= eps) && !((a) < -eps));
+}
+SIMD_FORCE_INLINE bool	btGreaterEqual (btScalar a, btScalar eps) {
+	return (!((a) <= eps));
+}
+
+SIMD_FORCE_INLINE int       btIsNegative(btScalar x) {
+    return x < btScalar(0.0) ? 1 : 0;
+}
+
+SIMD_FORCE_INLINE btScalar btRadians(btScalar x) { return x * SIMD_RADS_PER_DEG; }
+SIMD_FORCE_INLINE btScalar btDegrees(btScalar x) { return x * SIMD_DEGS_PER_RAD; }
 
 #if 1
 	// SIMD ver.
@@ -128,14 +215,6 @@ typedef Vectormath::Aos::Point3     vmPoint3;
 #endif    
 #ifndef SAFE_RELEASE
 #define SAFE_RELEASE(p)      { if (p) { (p)->Release(); (p)=NULL; } }
-#endif
-
-#ifndef D3DXToRadian
-#define D3DXToRadian(degree) ((degree) * (M_PI / 180.0f))
-#endif
-
-#ifndef D3DXToDegree
-#define D3DXToDegree( radian ) ((radian) * (180.0f / M_PI))
 #endif
 
 #ifndef DIRECT3D_VERSION
