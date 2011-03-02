@@ -22,7 +22,6 @@
 #include <QtCore/QPointer>
 
 #include "ctkDoubleSlider.h"
-#include "../common/logging.h"
 
 class AttrFactory : public QObject
 {
