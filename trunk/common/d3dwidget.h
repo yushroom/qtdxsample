@@ -457,9 +457,9 @@ protected:
 			}
 			else if((e->buttons() & Qt::RightButton) && !(e->buttons() & Qt::LeftButton))
 			{
-				QPointF delta = (e->posF() - m_clickPos) / (float)height();
-				m_camera->m_centerOfInterest = m_camera->m_savedCenterOfInterest;
-				zoomCamera( exp(delta.y()) );
+				QPointF delta = (e->posF() - m_clickPos) / (float)height() * m_camera->m_centerOfInterest;
+				m_camera->m_target = m_camera->m_savedTarget;
+				moveCamera( 0, 0, delta.y() );
 				update();
 			}
 			else if(e->buttons() & Qt::MiddleButton)
