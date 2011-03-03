@@ -1,10 +1,11 @@
 #pragma once
 
 #include "common.h"
-#include "../common/logging.h"
 
 #include <QWidget>
 #include <QResizeEvent>
+#include <QtGui/QMainWindow>
+#include <QtGui/QStatusBar>
 #include <QtGui/QVector2D>
 #include <QtGui/QVector3D>
 #include <QtGui/QVector4D>
@@ -417,6 +418,11 @@ protected:
 		return true/*e->modifiers() == Qt::AltModifier*/;
 	}
 
+	void showStatus(const QString &message)
+	{
+		qobject_cast<QMainWindow*>(parent())->statusBar()->showMessage(message);
+	}
+
 	void mousePressEvent(QMouseEvent *e)
 	{
 		m_clickPos = e->posF();
@@ -429,14 +435,18 @@ protected:
 
 			if((e->buttons() & Qt::LeftButton) && !(e->buttons() & Qt::RightButton))
 			{
+				// Shift to constrain rotaion
+				showStatus(tr("Tumble Tool: LMB Drag: Use LMB or MMB to tumble"));
 				setCursor(Qt::OpenHandCursor);
 			}
 			else if((e->buttons() & Qt::RightButton) && !(e->buttons() & Qt::LeftButton))
 			{
+				showStatus(tr("Dolly Tool: RMB Drag: Use mouse to dolly"));
 				setCursor(Qt::SizeVerCursor);
 			}
 			else if(e->buttons() & Qt::MiddleButton)
 			{
+				showStatus(tr("Track Tool: MMB Drag: Use LMB or MMB to track"));
 				setCursor(Qt::SizeAllCursor);
 			}
 		}
@@ -477,6 +487,7 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *e)
 	{
 		setCursor(Qt::ArrowCursor);
+		showStatus("");
 		
 		QWidget::mouseReleaseEvent(e);
 	}
