@@ -1,7 +1,7 @@
 #pragma once
 
 #define USE_D3D 10
-#include "../common/d3dwidget.h"
+#include "../GUI/d3dwidget.h"
 
 class MyDX10Widget : public DXWidget
 {
@@ -26,24 +26,8 @@ public:
 	};
 
 	MyDX10Widget( QWidget *parent = 0, Qt::WFlags flags = 0 )
-		: DXWidget( parent, flags )
+		: DXWidget( parent, flags ), m_pDevice(0)
 	{
-		m_pDevice = 0;
-		m_pSwapChain = 0;
-		m_pRenderTargetView = 0;
-		m_pDepthStencil = 0;
-		m_pDepthStencilView = 0;
-		m_FeatureLevel = D3D10_FEATURE_LEVEL_9_1;
-
-		m_pVertexLayout = NULL;
-		m_pVB10 = NULL;
-		m_pIB10 = NULL;
-		m_pVS10 = NULL;
-		m_pPS10 = NULL;
-		m_pConstantBuffer10 = NULL;
-		m_pBlendStateNoBlend = NULL;
-		m_pRasterizerStateNoCull = NULL;
-		m_pLessEqualDepth = NULL;
 	}
 
 	virtual ~MyDX10Widget()
@@ -61,6 +45,23 @@ public:
 	HRESULT initialize()
 	{
 		HRESULT hr = S_OK;
+
+		m_pDevice = 0;
+		m_pSwapChain = 0;
+		m_pRenderTargetView = 0;
+		m_pDepthStencil = 0;
+		m_pDepthStencilView = 0;
+		m_FeatureLevel = D3D10_FEATURE_LEVEL_9_1;
+
+		m_pVertexLayout = NULL;
+		m_pVB10 = NULL;
+		m_pIB10 = NULL;
+		m_pVS10 = NULL;
+		m_pPS10 = NULL;
+		m_pConstantBuffer10 = NULL;
+		m_pBlendStateNoBlend = NULL;
+		m_pRasterizerStateNoCull = NULL;
+		m_pLessEqualDepth = NULL;
 
 		static const D3D10_DRIVER_TYPE driverAttempts[] =
 		{
@@ -503,19 +504,8 @@ public:
 		return hr;
 	}
 
-	void resizeEvent(QResizeEvent *p_event)
+	void	onResize( UINT nWidth, UINT nHeight )
 	{
-		QSize newSize = size();
-		if(p_event)
-		{
-			newSize = p_event->size();
-			// if( width()==newSize.width() && height()==newSize.height() ) return;
-			QWidget::resizeEvent( p_event );
-		}
-
-		UINT nWidth = newSize.width();
-		UINT nHeight = newSize.height();
-
 		HRESULT hr = S_OK;
 
 		ID3D10Resource *pBackBufferResource = NULL;

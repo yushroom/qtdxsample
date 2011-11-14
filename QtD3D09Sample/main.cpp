@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "qtdxsample.h"
+#include "../GUI/qtdxsample.h"
 #include <QtGui/QApplication>
 #include <QtGui/QMessageBox>
 
