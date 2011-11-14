@@ -1,7 +1,7 @@
 #pragma once
 
 #define USE_D2D 1
-#include "../common/d3dwidget.h"
+#include "../GUI/d3dwidget.h"
 
 class MyD2DWidget : public DXWidget
 {
@@ -9,12 +9,8 @@ class MyD2DWidget : public DXWidget
 
 public:
 	MyD2DWidget( QWidget *parent = 0, Qt::WFlags flags = 0 )
-		: DXWidget( parent, flags )
+		: DXWidget( parent, flags ), m_pD2DFactory(0)
 	{
-		m_pD2DFactory = 0;
-		m_pWICFactory = 0;
-		m_pDWriteFactory = 0;
-		m_pHwndRenderTarget = 0;
 	}
 
 	virtual ~MyD2DWidget()
@@ -92,6 +88,11 @@ public:
 	HRESULT	initialize()
 	{
 		HRESULT hr = S_OK;
+
+		m_pD2DFactory = 0;
+		m_pWICFactory = 0;
+		m_pDWriteFactory = 0;
+		m_pHwndRenderTarget = 0;
 
 		// Create D2D factory
 		hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pD2DFactory);
@@ -215,19 +216,8 @@ public:
 		return S_OK;
 	}
 
-	void resizeEvent(QResizeEvent *p_event)
+	void	onResize( UINT nWidth, UINT nHeight )
 	{
-		QSize newSize = size();
-		if(p_event)
-		{
-			newSize = p_event->size();
-			// if( width()==newSize.width() && height()==newSize.height() ) return;
-			QWidget::resizeEvent( p_event );
-		}
-
-		UINT nWidth = newSize.width();
-		UINT nHeight = newSize.height();
-
 		HRESULT hr = S_OK;
 
 		if( m_pHwndRenderTarget )
@@ -236,8 +226,8 @@ public:
 			// error here -- it will be repeated on the next call to
 			// EndDraw.
 			D2D1_SIZE_U size;
-			size.width = newSize.width();
-			size.height = newSize.height();
+			size.width = nWidth;
+			size.height = nHeight;
 
 			m_pHwndRenderTarget->Resize(size);
 		}

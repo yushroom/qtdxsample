@@ -1,7 +1,7 @@
 #pragma once
 
 #define USE_D3D 9
-#include "../common/d3dwidget.h"
+#include "../GUI/d3dwidget.h"
 #include "../common/logging.h"
 
 class MyDX9Widget : public DXWidget
@@ -10,16 +10,8 @@ class MyDX9Widget : public DXWidget
 
 public:
 	MyDX9Widget( QWidget *parent = 0, Qt::WFlags flags = 0 )
-		: DXWidget( parent, flags )
+		: DXWidget( parent, flags ), m_pD3D(0), m_pDevice(0)
 	{
-		m_pD3D = 0;
-		m_pDevice = 0;
-		
-		m_pVB = NULL;
-		m_pIB = NULL;
-		m_pVertexShader = NULL;
-		m_pConstantTable = NULL;
-		m_pVertexDeclaration = NULL;
 	}
 
 	virtual ~MyDX9Widget()
@@ -37,6 +29,15 @@ public:
 	HRESULT initialize()
 	{
 		HRESULT hr = S_OK;
+
+		m_pD3D = 0;
+		m_pDevice = 0;
+		
+		m_pVB = NULL;
+		m_pIB = NULL;
+		m_pVertexShader = NULL;
+		m_pConstantTable = NULL;
+		m_pVertexDeclaration = NULL;
 
 		m_pD3D = Direct3DCreate9(D3D_SDK_VERSION); //Standard
 
@@ -393,25 +394,14 @@ public:
 		render();
 	}
 
-	void resizeEvent(QResizeEvent *p_event)
+	void	onResize( UINT nWidth, UINT nHeight )
 	{
-		QSize newSize = size();
-		if(p_event)
-		{
-			newSize = p_event->size();
-			// if( width()==newSize.width() && height()==newSize.height() ) return;
-			QWidget::resizeEvent( p_event );
-		}
-
-		UINT nWidth = newSize.width();
-		UINT nHeight = newSize.height();
-
 		HRESULT hr = S_OK;
 
 		if( !m_pDevice ) return;
 
-		m_d3dpp.BackBufferWidth = newSize.width();
-		m_d3dpp.BackBufferHeight = newSize.height();
+		m_d3dpp.BackBufferWidth = nWidth;
+		m_d3dpp.BackBufferHeight = nHeight;
 
 		invalidateDeviceObjects();
 

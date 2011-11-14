@@ -21,8 +21,6 @@
 #include <QtCore/QVariant>
 #include <QtCore/QPointer>
 
-#include "ctkDoubleSlider.h"
-
 class AttrFactory : public QObject
 {
 	Q_OBJECT
@@ -283,7 +281,7 @@ public:
 		if( value.type() != QVariant::Double ) return;
 
 		spinBox->setValue(value.toDouble());
-		slider->setValue(value.toDouble());
+		slider->setValue(toInt(value.toDouble()));
 	}
 
 	virtual	QVariant	data( )
@@ -302,21 +300,21 @@ public:
 		spinBox->setButtonSymbols(QAbstractSpinBox::NoButtons);
 		spinBox->setValue(minimum);
 		spinBox->setRange(minimum, maximum);
-		spinBox->setSingleStep( singleStep);
+		spinBox->setSingleStep(singleStep);
 		editor->layout()->addWidget(spinBox);
 
-		slider = new ctkDoubleSlider(Qt::Horizontal, parent);
+		slider = new QSlider(Qt::Horizontal, parent);
 		slider->setFixedWidth(SPIN_WIDTH*2);
 		slider->setFocusPolicy(Qt::NoFocus);
-		slider->layout()->itemAt(0)->widget()->setFocusPolicy(Qt::NoFocus);
-		slider->setValue(minimum);
-		slider->setRange(minimum, maximum);
-		slider->setSingleStep(singleStep);
-		//slider->setPageStep(pageStep);
+		slider->setFocusPolicy(Qt::NoFocus);
+		slider->setValue(toInt(minimum));
+		slider->setRange(toInt(minimum), toInt(maximum));
+		slider->setSingleStep(toInt(singleStep));
+		slider->setPageStep(toInt(pageStep));
 		editor->layout()->addWidget(slider);
 
 		QObject::connect(spinBox, SIGNAL(editingFinished()), this, SLOT(slotSetSpinBoxValue()));
-		QObject::connect(slider, SIGNAL(valueChanged(double)), this, SLOT(slotSetSliderValue(double)));
+		QObject::connect(slider, SIGNAL(valueChanged(int)), this, SLOT(slotSetSliderValue(int)));
 
 		return editor;
 	}
@@ -330,7 +328,7 @@ public slots:
 		if(!slider || !spinBox) return;
 
 		slider->blockSignals(true);
-		slider->setValue(value);
+		slider->setValue(toInt(value));
 		slider->blockSignals(false);
 
 		spinBox->blockSignals(true);
@@ -344,19 +342,19 @@ protected slots:
 		if(!slider || !spinBox) return;
 
 		slider->blockSignals(true);
-		slider->setValue(spinBox->value());
+		slider->setValue(toInt(spinBox->value()));
 		slider->blockSignals(false);
 		emit setValue(spinBox->value());
 	}
 
-	void slotSetSliderValue(double value)
+	void slotSetSliderValue(int value)
 	{
 		if(!spinBox) return;
 
 		spinBox->blockSignals(true);
-		spinBox->setValue(value);
+		spinBox->setValue(fromInt(value));
 		spinBox->blockSignals(false);
-		emit setValue(value);
+		emit setValue(fromInt(value));
 	}
 
 protected:
@@ -365,8 +363,18 @@ protected:
 	double		singleStep;
 	double		pageStep;
 
+	int toInt(double doubleValue)const
+	{
+	  return (int)(doubleValue*100.0);
+	}
+
+	double fromInt(int intValue)const
+	{
+	  return (intValue/100.0);
+	}
+
 	QPointer<QDoubleSpinBox>	spinBox;
-	QPointer<ctkDoubleSlider>	slider;
+	QPointer<QSlider>	slider;
 };
 
 class FloatAttrFactory : public AttrFactory
