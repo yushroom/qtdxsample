@@ -1,14 +1,15 @@
 #pragma once
 
 #include "../common/common.h"
+#include "../common/camera.h"
 
-#include <QWidget>
-#include <QResizeEvent>
-#include <QtGui/QMainWindow>
-#include <QtGui/QStatusBar>
-#include <QtGui/QVector2D>
-#include <QtGui/QVector3D>
-#include <QtGui/QVector4D>
+#include <QWidget.h>
+#include <QtGui/QResizeEvent>
+#include <QtGui/QMainWindow.h>
+#include <QtGui/QStatusBar.h>
+#include <QtGui/QVector2D.h>
+#include <QtGui/QVector3D.h>
+#include <QtGui/QVector4D.h>
 
 class DXWidget : public QWidget
 {
@@ -26,11 +27,11 @@ public:
 		m_lastRendered = 0;
 		m_fTime = 0;
 		m_camera = (Camera*)_aligned_malloc(sizeof(Camera),16);
+		m_camera->initialize();
 	}
 	virtual ~DXWidget()
 	{
 		_aligned_free(m_camera);
-		//SAFE_DELETE(m_camera);
 	}
 
 	virtual void	setVisible(bool visible)
@@ -70,262 +71,64 @@ public:
 
 	virtual void	initCamera()
 	{
-		m_camera->m_aspect = 1.0f;
-		m_camera->m_eye = vmVector3(0.0f, 0.0f, 0.0f);
-		m_camera->m_target = vmVector3(0.0f, 0.0f, 0.0f);
-		m_camera->m_savedTarget = vmVector3(0.0f, 0.0f, 0.0f);
-		m_camera->m_xAxis = vmVector3(1.0f, 0.0f, 0.0f);
-		m_camera->m_yAxis = m_camera->m_targetYAxis = vmVector3(0.0f, 1.0f, 0.0f);
-		m_camera->m_zAxis = vmVector3(0.0f, 0.0f, 1.0f);
-		m_camera->m_viewDir = vmVector3(0.0f, 0.0f, 1.0f);
-		m_camera->m_centerOfInterest = 1.0f;
-
-		m_camera->m_orientation = vmQuat::identity();
-		m_camera->m_savedOrientation = vmQuat::identity();
-
-		m_camera->m_viewMatrix = vmMatrix4::identity();
-		m_camera->m_projMatrix = vmMatrix4::identity();
-
-		float fAspect = width() / (float)height();
-		perspective( 45.0f, fAspect, 0.1f, 5000.0f );
-
+		perspective( 45.0f, width() / (float)height(), 0.1f, 5000.0f );
 		lookAtCamera( vmVector3( 3.857, 2.5, -3.857 ), vmVector3( 0, 0, 0 ), vmVector3( 0, 1, 0 ) );
 	}
 
 	void setAspect(float aspect)
 	{
-		m_camera->m_aspect = aspect;
-		updateProjectionMatrix();
+		m_camera->setAspect(aspect);
 	}
 
 	void perspective(float fovx, float aspect, float znear, float zfar)
 	{
-		// Construct a projection matrix based on the horizontal field of view
-		// 'fovx' rather than the more traditional vertical field of view 'fovy'.
-
-		m_camera->m_fovx = fovx;
+		m_camera->perspective(fovx, aspect, znear, zfar);
 		emit setAngleOfView((double)fovx);
-
-		m_camera->m_znear = znear;
 		emit setNearClipPlane((double)znear);
-		
-		m_camera->m_zfar = zfar;
 		emit setFarClipPlane((double)zfar);
-
-		m_camera->m_aspect = aspect;
-
-		updateProjectionMatrix();
 	}
 
 	void moveCamera(float dx, float dy, float dz)
 	{
-		// Moves the camera by dx world units to the left or right; dy
-		// world units upwards or downwards; and dz world units forwards
-		// or backwards.
+		m_camera->move(dx, dy, dz);
 
-		// Orbiting camera is always positioned relative to the
-		// target position. See updateViewMatrix().
-
-		m_camera->m_target += m_camera->m_xAxis * dx;
-		m_camera->m_target += m_camera->m_yAxis * dy;
-		m_camera->m_target += m_camera->m_zAxis * dz;
-		emit setCameraTranslate(QVector3D(m_camera->m_target[0], m_camera->m_target[1], m_camera->m_target[2]));
-
-		updateViewMatrix();
+		vmVector3 target = m_camera->getTarget();
+		emit setCameraTranslate(QVector3D(target[0], target[1], target[2]));
 	}
 
 	void rotateCamera(float headingDegrees, float pitchDegrees, float rollDegrees)
 	{
-		// Rotates the camera based on its current behavior.
-		// Note that not all behaviors support rolling.
+		m_camera->rotate(headingDegrees, pitchDegrees, rollDegrees);
 
-		pitchDegrees = -pitchDegrees;
-		headingDegrees = -headingDegrees;
-
-		float heading = btRadians(headingDegrees);
-		float pitch = btRadians(pitchDegrees);
-
-		vmQuat rot;
-		const vmVector3 WORLD_XAXIS(1.0f, 0.0f, 0.0f);
-
-		if (heading != 0.0f)
+		vmVector3 euler;
+		if(m_camera->getEulerAngle(euler))
 		{
-			rot = vmQuat::rotation(heading, m_camera->m_targetYAxis);
-			m_camera->m_orientation = m_camera->m_orientation * rot;
+			emit setCameraRotate(QVector3D(btDegrees(euler[0]), btDegrees(euler[1]), btDegrees(euler[2])));
 		}
-
-		if (pitch != 0.0f)
-		{
-			rot = vmQuat::rotation(pitch, WORLD_XAXIS);
-			m_camera->m_orientation = rot * m_camera->m_orientation;
-		}
-
-		{
-			vmVector3 euler;
-			if( QuaternionToYawPitchRoll(euler, m_camera->m_orientation) )
-			{
-				emit setCameraRotate(QVector3D(btDegrees(euler[0]), btDegrees(euler[1]), btDegrees(euler[2])));
-			}
-		}
-
-		updateViewMatrix();
 	}
 
 	void zoomCamera(float zoom)
 	{
-		m_camera->m_centerOfInterest *= zoom;
-		emit setCenterOfInterest((double)m_camera->m_centerOfInterest);
-		updateViewMatrix();
+		m_camera->zoom(zoom);
+
+		emit setCenterOfInterest((double)m_camera->getCenterOfInterest());
 	}
 
 	void lookAtCamera(const vmVector3 &eye, const vmVector3 &target, const vmVector3 &up)
 	{
-		m_camera->m_eye = eye;
-		m_camera->m_target = target;
-		emit setCameraTranslate(QVector3D(m_camera->m_target[0], m_camera->m_target[1], m_camera->m_target[2]));
+		m_camera->lookAt(eye, target, up);
 
-		m_camera->m_zAxis = target - eye;
-		m_camera->m_centerOfInterest = length(m_camera->m_zAxis);
-		emit setCenterOfInterest((double)m_camera->m_centerOfInterest);
-		m_camera->m_zAxis = normalize(m_camera->m_zAxis);
+		emit setCameraTranslate(QVector3D(target[0], target[1], target[2]));
 
-		m_camera->m_viewDir = m_camera->m_zAxis;
-
-		m_camera->m_xAxis = normalize(cross(up, m_camera->m_zAxis));
-		m_camera->m_yAxis = normalize(cross(m_camera->m_zAxis, m_camera->m_xAxis));
-
-		//m_camera->m_viewMatrix = vmMatrix4::lookAt(vmPoint3(eye), vmPoint3(target), up);
-
-		m_camera->m_viewMatrix.setRow( 0, vmVector4(m_camera->m_xAxis, -dot(m_camera->m_xAxis, eye)) );
-		m_camera->m_viewMatrix.setRow( 1, vmVector4(m_camera->m_yAxis, -dot(m_camera->m_yAxis, eye)) );
-		m_camera->m_viewMatrix.setRow( 2, vmVector4(m_camera->m_zAxis, -dot(m_camera->m_zAxis, eye)) );
-		m_camera->m_viewMatrix.setRow( 3, vmVector4(0,0,0,1) );
-	
-		m_camera->m_orientation = vmQuat(m_camera->m_viewMatrix.getUpper3x3());
+		emit setCenterOfInterest((double)m_camera->getCenterOfInterest());
 
 		vmVector3 euler;
-		if( QuaternionToYawPitchRoll(euler, m_camera->m_orientation) )
+		if(m_camera->getEulerAngle(euler))
 		{
 			emit setCameraRotate(QVector3D(btDegrees(euler[0]), btDegrees(euler[1]), btDegrees(euler[2])));
 		}
 
 		emit setCameraScale(QVector3D(1, 1, 1));
-	}
-
-	static vmQuat YawPitchRollToQuaternion(const vmVector3 &radian)
-	{
-		float xRadian = radian[0] * 0.5f;
-		float yRadian = radian[1] * 0.5f;
-		float zRadian = radian[2] * 0.5f;
-		float sinX = sin(xRadian);
-		float cosX = cos(xRadian);
-		float sinY = sin(yRadian);
-		float cosY = cos(yRadian);
-		float sinZ = sin(zRadian);
-		float cosZ = cos(zRadian);
-		float x = (float)(sinX * cosY * cosZ - cosX * sinY * sinZ);
-		float y = (float)(cosX * sinY * cosZ + sinX * cosY * sinZ);
-		float z = (float)(cosX * cosY * sinZ - sinX * sinY * cosZ);
-		float w = (float)(cosX * cosY * cosZ + sinX * sinY * sinZ);
-		return vmQuat(x,y,z,w);
-	}
-
-	static bool QuaternionToYawPitchRoll(vmVector3 &radian, const vmQuat &q)
-	{
-		float x = q[0];
-		float y = q[1];
-		float z = q[2];
-		float w = q[3];
-
-		//
-		float x2 = x + x;
-		float y2 = y + y;
-		float z2 = z + z;
-		float xz2 = x * z2;
-		float wy2 = w * y2;
-		float temp = -(xz2 - wy2);
-		//
-		if(temp >= 1){ temp = 1; }
-		else if(temp <= -1){ temp = -1; }
-		float yRadian = asin(temp);
-		radian[1] = (float)yRadian;
-		//
-		float xx2 = x * x2;
-		float xy2 = x * y2;
-		float zz2 = z * z2;
-		float wz2 = w * z2;
-		if(yRadian < SIMD_PI * 0.5)
-		{
-			if(yRadian > -SIMD_PI * 0.5)
-			{
-				float yz2 = y * z2;
-				float wx2 = w * x2;
-				float yy2 = y * y2;
-				radian[0] = (float)atan2((yz2 + wx2), (1 - (xx2 + yy2)));
-				radian[2]= (float)atan2((xy2 + wz2), (1 - (yy2 + zz2)));
-				return true;
-			}
-			else
-			{
-				radian[0] = -(float)atan2((xy2 - wz2), (1 - (xx2 + zz2)));
-				radian[2] = 0;
-				return false;
-			}
-		}
-		else
-		{
-			radian[0] = (float)atan2((xy2 - wz2), (1 - (xx2 + zz2)));
-			radian[2] = 0;
-			return false;
-		}
-	}//method
-
-	void updateViewMatrix()
-	{
-		// Reconstruct the view matrix.
-
-		m_camera->m_orientation = normalize(m_camera->m_orientation);
-		m_camera->m_viewMatrix = vmMatrix4::rotation(m_camera->m_orientation);
-
-		m_camera->m_xAxis = m_camera->m_viewMatrix.getRow(0).getXYZ();
-		m_camera->m_yAxis = m_camera->m_viewMatrix.getRow(1).getXYZ();
-		m_camera->m_zAxis = m_camera->m_viewMatrix.getRow(2).getXYZ();
-		m_camera->m_viewDir = m_camera->m_zAxis;
-
-		m_camera->m_eye = m_camera->m_target + m_camera->m_viewDir * -m_camera->m_centerOfInterest;
-
-		m_camera->m_viewMatrix[3][0] = -dot(m_camera->m_xAxis, m_camera->m_eye);
-		m_camera->m_viewMatrix[3][1] = -dot(m_camera->m_yAxis, m_camera->m_eye);
-		m_camera->m_viewMatrix[3][2] = -dot(m_camera->m_zAxis, m_camera->m_eye);
-	}
-
-	void updateProjectionMatrix()
-	{
-		float e = 1.0f / tanf(btRadians(m_camera->m_fovx) / 2.0f);
-		float aspectInv = 1.0f / m_camera->m_aspect;
-		float fovy = 2.0f * atanf(aspectInv / e);
-		float xScale = 1.0f / tanf(0.5f * fovy);
-		float yScale = xScale / aspectInv;
-
-		m_camera->m_projMatrix[0][0] = xScale;
-		m_camera->m_projMatrix[1][0] = 0.0f;
-		m_camera->m_projMatrix[2][0] = 0.0f;
-		m_camera->m_projMatrix[3][0] = 0.0f;
-
-		m_camera->m_projMatrix[0][1] = 0.0f;
-		m_camera->m_projMatrix[1][1] = yScale;
-		m_camera->m_projMatrix[2][1] = 0.0f;
-		m_camera->m_projMatrix[3][1] = 0.0f;
-
-		m_camera->m_projMatrix[0][2] = 0.0f;
-		m_camera->m_projMatrix[1][2] = 0.0f;
-		m_camera->m_projMatrix[2][2] = m_camera->m_zfar / (m_camera->m_zfar - m_camera->m_znear);
-		m_camera->m_projMatrix[3][2] = -m_camera->m_znear * m_camera->m_zfar / (m_camera->m_zfar - m_camera->m_znear);
-
-		m_camera->m_projMatrix[0][3] = 0.0f;
-		m_camera->m_projMatrix[1][3] = 0.0f;
-		m_camera->m_projMatrix[2][3] = 1.0f;
-		m_camera->m_projMatrix[3][3] = 0.0f;
 	}
 
 signals:
@@ -340,15 +143,13 @@ signals:
 public slots:
 	void	cameraTranslateChanged(QVector3D p)
 	{
-		m_camera->m_target = vmVector3(p.x(), p.y(), p.z());
-		updateViewMatrix();
+		m_camera->setTarget(vmVector3(p.x(), p.y(), p.z()));
 		update();
 	}
 
 	void	cameraRotateChanged(QVector3D p)
 	{
-		m_camera->m_orientation = YawPitchRollToQuaternion(vmVector3(btRadians(p.x()), btRadians(p.y()), btRadians(p.z())));
-		updateViewMatrix();
+		m_camera->setEulerAngle(vmVector3(btRadians(p.x()), btRadians(p.y()), btRadians(p.z())));
 		update();
 	}
 
@@ -358,29 +159,25 @@ public slots:
 
 	void	angleOfViewChanged(double value)
 	{
-		m_camera->m_fovx = value;
-		updateProjectionMatrix();
+		m_camera->setFovx(value);
 		update();
 	}
 
 	void	nearClipPlaneChanged(double value)
 	{
-		m_camera->m_znear = value;
-		updateProjectionMatrix();
+		m_camera->setZnear(value);
 		update();
 	}
 
 	void	farClipPlaneChanged(double value)
 	{
-		m_camera->m_zfar = value;
-		updateProjectionMatrix();
+		m_camera->setZfar(value);
 		update();
 	}
 
 	void	centerOfInterestChanged(double value)
 	{
-		m_camera->m_centerOfInterest = value;
-		updateViewMatrix();
+		m_camera->setCenterOfInterest(value);
 		update();
 	}
 
@@ -416,14 +213,14 @@ protected:
 		}
 	}
 
-	vmMatrix4& ViewMatrix()
+	const vmMatrix4& ViewMatrix() const 
 	{
-		return m_camera->m_viewMatrix;
+		return m_camera->getViewMatrix();
 	}
 
-	vmMatrix4& ProjMatrix()
+	const vmMatrix4& ProjMatrix() const 
 	{
-		return m_camera->m_projMatrix;
+		return m_camera->getProjMatrix();
 	}
 
 	static bool isCameraOperation(QMouseEvent *e)
@@ -442,9 +239,7 @@ protected:
 
 		if(isCameraOperation(e))
 		{
-			m_camera->m_savedTarget = m_camera->m_target;
-			m_camera->m_savedOrientation = m_camera->m_orientation;
-			m_camera->m_savedCenterOfInterest = m_camera->m_centerOfInterest;
+			m_camera->backup();
 
 			if((e->buttons() & Qt::LeftButton) && !(e->buttons() & Qt::RightButton))
 			{
@@ -474,21 +269,21 @@ protected:
 			if((e->buttons() & Qt::LeftButton) && !(e->buttons() & Qt::RightButton))
 			{
 				QPointF delta = (e->posF() - m_clickPos) / (float)height() * 180.0f;
-				m_camera->m_orientation = m_camera->m_savedOrientation;
+				m_camera->recover();
 				rotateCamera( delta.x(), delta.y(), 0.0f );
 				update();
 			}
 			else if((e->buttons() & Qt::RightButton) && !(e->buttons() & Qt::LeftButton))
 			{
-				QPointF delta = (e->posF() - m_clickPos) / (float)height() * m_camera->m_centerOfInterest;
-				m_camera->m_target = m_camera->m_savedTarget;
+				QPointF delta = (e->posF() - m_clickPos) / (float)height() * m_camera->getCenterOfInterest();
+				m_camera->recover();
 				moveCamera( 0, 0, delta.y() );
 				update();
 			}
 			else if(e->buttons() & Qt::MiddleButton)
 			{
-				QPointF delta = (e->posF() - m_clickPos) / (float)height() * m_camera->m_centerOfInterest;
-				m_camera->m_target = m_camera->m_savedTarget;
+				QPointF delta = (e->posF() - m_clickPos) / (float)height() * m_camera->getCenterOfInterest();
+				m_camera->recover();
 				moveCamera( -delta.x(), delta.y(), 0.0f );
 				update();
 			}
@@ -512,35 +307,6 @@ protected:
 		zoomCamera(1.0f - (e->delta() / WHEEL_DELTA) * 0.125f);
 		update();
 	}
-
-	ATTRIBUTE_ALIGNED16(struct Camera)
-	{
-		// View matrix
-		vmMatrix4	m_viewMatrix;
-
-		// Projection matrix
-		vmMatrix4	m_projMatrix;
-
-		//! Camera Parameters
-		vmVector3 m_target;
-		vmVector3 m_savedTarget;
-		vmVector3 m_eye;
-		vmVector3 m_targetYAxis;
-		vmVector3 m_xAxis;
-		vmVector3 m_yAxis;
-		vmVector3 m_zAxis;
-		vmVector3 m_viewDir;
-		vmQuat m_orientation;
-		vmQuat m_savedOrientation;
-
-		float m_aspect;
-		float m_fovx;
-		float m_znear;
-		float m_zfar;
-
-		float m_centerOfInterest;
-		float m_savedCenterOfInterest;
-	};
 
 	//! Pointer of Camera for 16-byte alignment
 	Camera*	m_camera;	
