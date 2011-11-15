@@ -25,10 +25,17 @@ public:
 		float fSomeFloatThatMayBeNeededByASpecificShader3;
 	};
 
+#ifdef QWIDGET_H
 	MyDX10Widget( QWidget *parent = 0, Qt::WFlags flags = 0 )
 		: DXWidget( parent, flags ), m_pDevice(0)
 	{
 	}
+#else
+	MyDX10Widget()
+		: m_pDevice(0)
+	{
+	}
+#endif
 
 	virtual ~MyDX10Widget()
 	{

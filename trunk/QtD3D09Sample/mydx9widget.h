@@ -9,10 +9,17 @@ class MyDX9Widget : public DXWidget
 	//Q_OBJECT
 
 public:
+#ifdef QWIDGET_H
 	MyDX9Widget( QWidget *parent = 0, Qt::WFlags flags = 0 )
 		: DXWidget( parent, flags ), m_pD3D(0), m_pDevice(0)
 	{
 	}
+#else
+	MyDX9Widget()
+		: m_pD3D(0), m_pDevice(0)
+	{
+	}
+#endif
 
 	virtual ~MyDX9Widget()
 	{
