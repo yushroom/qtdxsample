@@ -1,7 +1,7 @@
 #pragma once
 
 #define USE_D3D 9
-#include "../GUI/d3dwidget.h"
+#include "../GUI/dxwidget.h"
 #include "../common/logging.h"
 
 class MyDX9Widget : public DXWidget
