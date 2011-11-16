@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "QtDXSample.h"
-#include "d3dwidget.h"
+#include "dxwidget.h"
 #include "ui_qtdxsample.h"
 
 QtDXSample::QtDXSample(QWidget *parent, Qt::WFlags flags)

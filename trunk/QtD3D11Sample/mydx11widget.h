@@ -1,7 +1,7 @@
 #pragma once
 
 #define USE_D3D 11
-#include "../GUI/d3dwidget.h"
+#include "../GUI/dxwidget.h"
 
 class MyDX11Widget : public DXWidget
 {
