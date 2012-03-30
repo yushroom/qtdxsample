@@ -32,7 +32,7 @@ ATTRIBUTE_ALIGNED16(struct Camera)
 		return QuaternionToYawPitchRoll(euler, m_orientation);
 	}
 
-	void setEulerAngle(vmVector3 angle)
+	void setEulerAngle(const vmVector3 &angle)
 	{
 		m_orientation = YawPitchRollToQuaternion(angle);
 		updateViewMatrix();
@@ -54,7 +54,7 @@ ATTRIBUTE_ALIGNED16(struct Camera)
 		return m_target;
 	}
 
-	void setTarget(vmVector3 target)
+	void setTarget(const vmVector3 &target)
 	{
 		 m_target = target;
 		 updateProjectionMatrix();
